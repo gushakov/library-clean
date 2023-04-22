@@ -15,6 +15,7 @@
     <description>library-clean</description>
     <properties>
         <java.version>17</java.version>
+        <janoid.version>2.0.0</janoid.version>
     </properties>
     <dependencies>
         <dependency>
@@ -45,9 +46,6 @@
             <optional>true</optional>
         </dependency>
 
-
-
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -61,8 +59,20 @@
         <dependency>
             <groupId>com.aventrix.jnanoid</groupId>
             <artifactId>jnanoid</artifactId>
-            <version>2.0.0</version>
+            <version>${janoid.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
     </dependencies>
 
     <build>
