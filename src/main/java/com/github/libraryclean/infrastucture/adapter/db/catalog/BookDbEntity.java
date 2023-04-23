@@ -9,9 +9,9 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 @Data
-@Table("works_catalog")
+@Table("books_catalog")
 @Builder
-public class WorkDbEntity {
+public class BookDbEntity {
 
     @Id
     @Column
@@ -23,8 +23,10 @@ public class WorkDbEntity {
     @Column
     private String  author;
 
-    @Column("copies")
-    private int numOfCopies;
+    /*
+        This is needed for Spring Data JDBC to track if an entity has already
+        been persisted once.
+     */
 
     @Version
     private Integer version;
