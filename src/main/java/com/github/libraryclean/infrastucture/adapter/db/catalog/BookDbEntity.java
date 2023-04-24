@@ -6,10 +6,13 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Version;
 import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.MappedCollection;
 import org.springframework.data.relational.core.mapping.Table;
 
+import java.util.Set;
+
 @Data
-@Table("books_catalog")
+@Table("book")
 @Builder
 public class BookDbEntity {
 
@@ -21,7 +24,10 @@ public class BookDbEntity {
     private String title;
 
     @Column
-    private String  author;
+    private String author;
+
+    @MappedCollection(idColumn = "isbn")
+    private Set<BookInstanceDbEntity> instances;
 
     /*
         This is needed for Spring Data JDBC to track if an entity has already
