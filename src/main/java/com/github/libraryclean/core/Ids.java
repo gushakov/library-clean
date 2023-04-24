@@ -1,4 +1,4 @@
-package com.github.libraryclean.core.model;
+package com.github.libraryclean.core;
 
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 

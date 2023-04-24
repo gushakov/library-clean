@@ -1,4 +1,4 @@
-package com.github.libraryclean.core.model;
+package com.github.libraryclean.core;
 
 public abstract class GenericLibraryError extends RuntimeException {
     public GenericLibraryError(String message) {

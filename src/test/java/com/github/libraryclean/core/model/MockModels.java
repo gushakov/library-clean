@@ -15,5 +15,4 @@ public final class MockModels {
         return allBooks().get(isbn);
     }
 
-
 }
