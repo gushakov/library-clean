@@ -1,6 +1,9 @@
 package com.github.libraryclean.core.model;
 
-import com.github.libraryclean.core.model.catalog.*;
+import com.github.libraryclean.core.model.catalog.Book;
+import com.github.libraryclean.core.model.catalog.BookInstance;
+import com.github.libraryclean.core.model.catalog.BookType;
+import com.github.libraryclean.core.model.catalog.Isbn;
 
 import java.util.Map;
 import java.util.Set;
@@ -25,17 +28,8 @@ public final class MockModels {
                         .author("Robert Martin")
                         .version(1)
                         .instances(Set.of(
-                                BookInstance.builder()
-                                        .bookId(BookId.of("ZuWLBP"))
-                                        .isbn(Isbn.of("0134494164"))
-                                        .type(BookType.RESTRICTED)
-                                        .build(),
-
-                                BookInstance.builder()
-                                        .bookId(BookId.of("ejVnPM"))
-                                        .isbn(Isbn.of("0134494164"))
-                                        .type(BookType.CIRCULATING)
-                                        .build()
+                                BookInstance.of("ZuWLBP", "0134494164", BookType.RESTRICTED),
+                                BookInstance.of("ejVnPM", "0134494164", BookType.CIRCULATING)
                         ))
                         .build(),
 
