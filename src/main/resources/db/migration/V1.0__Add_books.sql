@@ -7,6 +7,6 @@ CREATE TABLE public.book
     CONSTRAINT book_pk PRIMARY KEY (isbn)
 );
 
-INSERT INTO public.book (isbn, title, author)
-VALUES ('0134494164', 'Clean Architecture', 'Robert Martin'),
-       ('0321125215', 'Domain-Driven Design', 'Eric Evans');
+INSERT INTO public.book (isbn, title, author, version)
+VALUES ('0134494164', 'Clean Architecture', 'Robert Martin', 1),
+       ('0321125215', 'Domain-Driven Design', 'Eric Evans', 1);

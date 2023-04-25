@@ -5,6 +5,10 @@ import lombok.Value;
 
 import static com.github.libraryclean.core.Validator.notBlank;
 
+/**
+ * International book identifier used by libraries. We are using format ISBN (10) in
+ * our example.
+ */
 @Value
 public class Isbn {
     String number;

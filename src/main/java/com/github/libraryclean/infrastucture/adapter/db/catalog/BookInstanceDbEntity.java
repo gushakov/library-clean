@@ -17,6 +17,6 @@ public class BookInstanceDbEntity {
     private String isbn;
 
     @Column
-    private BookType type;
+    private String type;
 
 }

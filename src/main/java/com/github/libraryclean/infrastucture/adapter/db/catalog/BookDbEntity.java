@@ -30,6 +30,8 @@ public class BookDbEntity {
     private Set<BookInstanceDbEntity> instances;
 
     /*
+        Point of interest
+        -----------------
         This is needed for Spring Data JDBC to track if an entity has already
         been persisted once.
      */
