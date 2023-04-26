@@ -1,4 +1,4 @@
-package com.github.libraryclean.core.model.catalog;
+package com.github.libraryclean.core.model.book;
 
 import com.github.libraryclean.core.model.InvalidDomainObjectError;
 import org.junit.jupiter.api.Test;
@@ -9,7 +9,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
-public class BookTest {
+public class CatalogEntryTest {
 
     @Test
     void isbn_equal_by_value() {
@@ -36,12 +36,12 @@ public class BookTest {
     @ParameterizedTest
     @NullSource
     @ValueSource(strings = {"", " ", "\t"})
-    void must_not_construct_book_with_invalid_title(String title) {
+    void must_not_construct_catalog_entry_with_invalid_title(String title) {
         // given
 
         // when
         Throwable t = catchThrowable(() ->
-                Book.builder()
+                CatalogEntry.builder()
                         .isbn(Isbn.of("123456789X"))
                         .title(title)
                         .author("author")

@@ -1,4 +1,4 @@
-package com.github.libraryclean.core.model.catalog;
+package com.github.libraryclean.core.model.book;
 
 import lombok.Builder;
 import lombok.Value;

@@ -1,4 +1,4 @@
-package com.github.libraryclean.core.model.catalog;
+package com.github.libraryclean.core.model.book;
 
 import lombok.Builder;
 import lombok.Value;
@@ -6,7 +6,9 @@ import lombok.Value;
 import static com.github.libraryclean.core.Validator.notBlank;
 
 /**
- * Unique ID of each book instance.
+ * Unique ID of the book.
+ *
+ * @see Book
  */
 @Value
 public class BookId {

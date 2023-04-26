@@ -1,13 +1,5 @@
 package com.github.libraryclean.core.model;
 
-import com.github.libraryclean.core.model.catalog.Book;
-import com.github.libraryclean.core.model.catalog.BookInstance;
-import com.github.libraryclean.core.model.catalog.BookType;
-import com.github.libraryclean.core.model.catalog.Isbn;
-
-import java.util.Map;
-import java.util.Set;
-
 /*
     Point of interest
     -----------------
@@ -16,36 +8,33 @@ import java.util.Set;
     can be used in unit tests and mock adapters for prototyping.
  */
 
+import com.github.libraryclean.core.model.book.*;
+
+import java.util.Map;
+
 public final class MockModels {
 
-    public static Map<String, Book> allBooks() {
+    public static Map<String, CatalogEntry> catalogEntries() {
         return Map.of(
                 "0134494164",
-
-                Book.builder()
-                        .isbn(Isbn.of("0134494164"))
-                        .title("Clean Architecture")
-                        .author("Robert Martin")
-                        .version(1)
-                        .instances(Set.of(
-                                BookInstance.of("ZuWLBP", "0134494164", BookType.RESTRICTED),
-                                BookInstance.of("ejVnPM", "0134494164", BookType.CIRCULATING)
-                        ))
-                        .build(),
+                CatalogEntry.of(Isbn.of("0134494164"), "Clean Architecture", "Robert Martin"),
 
                 "0321125215",
-
-                Book.builder()
-                        .isbn(Isbn.of("0321125215"))
-                        .title("Domain-Driven Design")
-                        .author("Eric Evans")
-                        .version(1)
-                        .build()
+                CatalogEntry.of(Isbn.of("0321125215"), "Domain-Driven Design", "Eric Evans")
         );
     }
 
-    public static Book aBook(String isbn) {
-        return allBooks().get(isbn);
+    public static CatalogEntry catalogEntry(String isbn) {
+        return catalogEntries().get(isbn);
+    }
+
+    public static Map<String, Book> books() {
+        return Map.of(
+                "ZuWLBP",
+                Book.of(BookId.of("ZuWLBP"), Isbn.of("0134494164"), BookType.RESTRICTED),
+                "ejVnPM",
+                Book.of(BookId.of("ejVnPM"), Isbn.of("0134494164"), BookType.CIRCULATING)
+        );
     }
 
 }
