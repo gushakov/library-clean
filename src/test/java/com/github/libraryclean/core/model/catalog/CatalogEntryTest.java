@@ -1,4 +1,4 @@
-package com.github.libraryclean.core.model.book;
+package com.github.libraryclean.core.model.catalog;
 
 import com.github.libraryclean.core.model.InvalidDomainObjectError;
 import org.junit.jupiter.api.Test;

@@ -1,6 +1,7 @@
 package com.github.libraryclean.core.model.book;
 
 
+import com.github.libraryclean.core.model.catalog.Isbn;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -29,13 +30,12 @@ public class Book {
     // unique identifier for the book
     BookId bookId;
 
-    // ISBN of the corresponing catalog entry
+    // ISBN of the corresponding catalog entry
     Isbn isbn;
 
     // type of the book
     BookType type;
 
-    Integer version;
 
     public static Book of(BookId bookId, Isbn isbn, BookType type) {
         return Book.builder()
@@ -50,6 +50,5 @@ public class Book {
         this.bookId = notNull(bookId);
         this.isbn = notNull(isbn);
         this.type = notNull(type);
-        this.version = version;
     }
 }

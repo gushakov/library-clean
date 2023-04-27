@@ -1,5 +1,6 @@
-package com.github.libraryclean.core.model.book;
+package com.github.libraryclean.core.model.catalog;
 
+import com.github.libraryclean.core.model.book.Book;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -31,9 +32,6 @@ public class CatalogEntry {
 
     String author;
 
-    // needed by Spring Data JDBC, see {@code BookDbEntity}
-    Integer version;
-
     public static CatalogEntry of(Isbn isbn, String title, String author) {
         return CatalogEntry.builder()
                 .isbn(isbn)
@@ -48,9 +46,6 @@ public class CatalogEntry {
         this.isbn = notNull(isbn);
         this.title = notBlank(title);
         this.author = notBlank(author);
-
-        // can be null for an entry which has never been persisted in the database
-        this.version = version;
     }
 
 }
