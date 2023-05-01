@@ -36,7 +36,6 @@ public class Book {
     // type of the book
     BookType type;
 
-
     public static Book of(BookId bookId, Isbn isbn, BookType type) {
         return Book.builder()
                 .bookId(bookId)
