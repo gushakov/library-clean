@@ -1,5 +1,6 @@
 package com.github.libraryclean.core.model.patron;
 
+import com.github.libraryclean.core.model.catalog.Isbn;
 import lombok.Value;
 
 import java.time.Instant;
@@ -14,9 +15,14 @@ import java.time.Instant;
 public class Hold {
 
     /**
+     * ISBN of the book on hold.
+     */
+    Isbn isbn;
+
+    /**
      * Type of hold: "open-ended" or "closed-ended".
      */
-    HoldType duration;
+    HoldType type;
 
     /**
      * Instant when hold was placed.

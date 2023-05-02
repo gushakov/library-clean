@@ -11,7 +11,7 @@ import lombok.experimental.FieldDefaults;
 import static com.github.libraryclean.core.Validator.notNull;
 
 /**
- * Actual copy a book as can be found on a shelf. Each {@code Book}
+ * Actual copy or a book as can be found on a shelf. Each {@code Book}
  * has a reference to a catalog entry via an ISBN. Each {@code Book} has {@code type}
  * attribute which can be "Circulating" or "Restricted".
  * <p>

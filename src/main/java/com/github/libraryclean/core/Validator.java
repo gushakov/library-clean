@@ -2,6 +2,8 @@ package com.github.libraryclean.core;
 
 import com.github.libraryclean.core.model.InvalidDomainObjectError;
 
+import java.util.Set;
+
 public class Validator {
 
     public static <T> T notNull(T anything) {
@@ -16,6 +18,14 @@ public class Validator {
             throw new InvalidDomainObjectError("Property cannot be blank");
         }
         return anyString;
+    }
+
+    public static <T> Set<T> copy(Set<T> original) {
+        if (original == null) {
+            return null;
+        } else {
+            return Set.copyOf(original);
+        }
     }
 
 }

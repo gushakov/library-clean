@@ -1,8 +1,9 @@
 package com.github.libraryclean.core.model.patron;
 
-import com.github.libraryclean.core.Validator;
 import lombok.Builder;
 import lombok.Value;
+
+import static com.github.libraryclean.core.Validator.notBlank;
 
 /**
  * Unique ID of a patron.
@@ -10,9 +11,10 @@ import lombok.Value;
 @Value
 public class PatronId {
 
+
     String id;
 
-    public static PatronId of(String id){
+    public static PatronId of(String id) {
         return PatronId.builder()
                 .id(id)
                 .build();
@@ -20,7 +22,7 @@ public class PatronId {
 
     @Builder
     public PatronId(String id) {
-        this.id = Validator.notBlank(id);
+        this.id = notBlank(id);
     }
 
     @Override
