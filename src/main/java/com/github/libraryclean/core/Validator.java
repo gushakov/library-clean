@@ -28,4 +28,13 @@ public class Validator {
         }
     }
 
+    public static int positive(int number){
+        if (number <= 0){
+            throw new InvalidDomainObjectError("Property must be a strictly positive integer value");
+        }
+        else {
+            return number;
+        }
+    }
+
 }
