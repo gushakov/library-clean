@@ -15,7 +15,6 @@ package com.github.libraryclean.core.model.patron;
 
 import com.github.libraryclean.core.model.catalog.Isbn;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
 import lombok.Value;
 
 import java.time.LocalDate;
@@ -28,13 +27,11 @@ import static com.github.libraryclean.core.Validator.notNull;
  * currently available.
  */
 @Value
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Hold {
 
     /**
      * ISBN of the book on hold.
      */
-    @EqualsAndHashCode.Include
     Isbn isbn;
 
     /**
@@ -166,4 +163,36 @@ public class Hold {
         return !hasExpired() && !wasCompleted() && !wasCanceled();
     }
 
+    /**
+     * Cancels this hold.
+     *
+     * @param dateCanceled date this hold was canceled
+     * @return new (canceled) hold
+     * @throws InvalidHoldStateError if hold is active or {@code dateCanceled} is invalid
+     */
+    public Hold cancel(LocalDate dateCanceled) {
+        // can only cancel hold if the cancellation date is posterior to the date of the start of the hold
+        if (notNull(dateCanceled).isBefore(fromDate)) {
+            throw new InvalidHoldStateError("Cancellation date: %s must be posterior to the start date: %s"
+                    .formatted(dateCanceled, fromDate));
+        }
+
+        // can only cancel an active hold
+        if (isActive()) {
+            return newHold()
+                    .dateCanceled(dateCanceled)
+                    .build();
+        } else {
+            throw new InvalidHoldStateError("Inactive hold cannot be canceled");
+        }
+    }
+
+    private HoldBuilder newHold() {
+        return new HoldBuilder()
+                .isbn(isbn)
+                .fromDate(fromDate)
+                .duration(duration)
+                .dateCanceled(dateCanceled)
+                .dateCompleted(dateCompleted);
+    }
 }
