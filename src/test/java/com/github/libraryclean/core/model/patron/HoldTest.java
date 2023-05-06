@@ -18,8 +18,9 @@ import com.github.libraryclean.core.model.catalog.Isbn;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
-import java.util.Optional;
 
+import static com.github.libraryclean.core.model.LibraryDsl.anyDate;
+import static com.github.libraryclean.core.model.LibraryDsl.dayLater;
 import static org.assertj.core.api.Assertions.*;
 
 public class HoldTest {
@@ -121,13 +122,5 @@ public class HoldTest {
 
         // then
         assertThat(error).isNotNull().isInstanceOf(InvalidHoldStateError.class);
-    }
-
-    private static LocalDate anyDate() {
-        return LocalDate.now();
-    }
-
-    private static LocalDate dayLater(LocalDate date) {
-        return date.plusDays(1);
     }
 }

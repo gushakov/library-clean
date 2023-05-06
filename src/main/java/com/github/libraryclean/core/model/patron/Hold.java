@@ -57,7 +57,7 @@ public class Hold {
     /**
      * Constructs and returns a new instance of an open-ended hold.
      *
-     * @param isbn     ISBN of the book on hold
+     * @param isbn      ISBN of the book on hold
      * @param startDate date this hold starts from
      * @return new hold
      */

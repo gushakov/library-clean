@@ -13,8 +13,13 @@
 
 package com.github.libraryclean.core.model.patron;
 
-import com.github.libraryclean.core.model.catalog.Isbn;
+import com.github.libraryclean.core.model.book.BookId;
+import lombok.Builder;
 import lombok.Value;
+
+import java.time.LocalDate;
+
+import static com.github.libraryclean.core.Validator.notNull;
 
 /**
  * Lease of a {@code Book} to a {@code Patron} by a library for an agreed, fixed duration of time.
@@ -25,15 +30,71 @@ import lombok.Value;
 public class CheckOut {
 
     /**
-     * ISBN of the checked out book
+     * ID of the checked out book instance.
      */
-    Isbn isbn;
+    BookId bookId;
 
-
+    /**
+     * Date this checkout has started.
+     */
+    LocalDate startDate;
 
     /**
      * Duration of this checkout.
      */
     Days duration;
+
+    /**
+     * Date the checkout book was actually returned.
+     */
+    LocalDate actualReturnDate;
+
+    public static CheckOut of(BookId bookId, LocalDate startDate, Days duration) {
+        return new CheckOutBuilder()
+                .bookId(bookId)
+                .startDate(startDate)
+                .duration(duration)
+                .build();
+    }
+
+    @Builder
+    private CheckOut(BookId bookId, LocalDate startDate, Days duration, LocalDate actualReturnDate) {
+        this.bookId = notNull(bookId);
+        this.startDate = notNull(startDate);
+        this.duration = notNull(duration);
+
+        // can be null
+        this.actualReturnDate = actualReturnDate;
+    }
+
+    public LocalDate scheduledReturnDate() {
+        return duration.addToDate(startDate);
+    }
+
+    /**
+     * Returns new checkout for the returned book.
+     *
+     * @param returnDate date the checked out book was returned
+     * @return new checkout
+     */
+    public CheckOut returnBook(LocalDate returnDate) {
+
+        // cannot return on the date before this checkout started
+        if (notNull(returnDate).isBefore(startDate)) {
+            throw new InvalidCheckOutStateError("Cannot return a checkout on the date before the checkout started");
+        }
+
+        return newCheckOut()
+                .actualReturnDate(returnDate)
+                .build();
+    }
+
+    private CheckOutBuilder newCheckOut() {
+        return new CheckOutBuilder()
+                .bookId(bookId)
+                .startDate(startDate)
+                .duration(duration)
+                .actualReturnDate(actualReturnDate);
+    }
 
 }

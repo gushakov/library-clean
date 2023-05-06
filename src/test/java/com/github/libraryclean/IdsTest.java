@@ -20,6 +20,7 @@ import java.security.SecureRandom;
 
 /**
  * This test generates some random unique IDs used in mock models. It is based on JNano ID library.
+ *
  * @see NanoIdUtils
  * @see <a href="Nano ID Collision Calculatror">https://zelark.github.io/nano-id-cc/</a>
  */
