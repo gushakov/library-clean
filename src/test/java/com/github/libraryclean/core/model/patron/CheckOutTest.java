@@ -16,7 +16,7 @@ public class CheckOutTest {
         // given
 
         LocalDate startDate = anyDate();
-        LocalDate invalidReturnDate = dayLater(startDate);
+        LocalDate invalidReturnDate = dayBefore(startDate);
         CheckOut checkOut = CheckOut.of(anyBookId(), startDate, Days.of(1));
 
         // when
