@@ -55,4 +55,8 @@ public class LibraryDsl {
         return date.plusDays(1);
     }
 
+    public static LocalDate dayBefore(LocalDate date) {
+        return date.minusDays(1);
+    }
+
 }

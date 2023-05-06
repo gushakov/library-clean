@@ -20,7 +20,7 @@ import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.assertj.core.api.Assertions.catchException;
 
 public class CatalogEntryTest {
 
@@ -53,7 +53,7 @@ public class CatalogEntryTest {
         // given
 
         // when
-        Throwable t = catchThrowable(() ->
+        Exception error = catchException(() ->
                 CatalogEntry.builder()
                         .isbn(Isbn.of("123456789X"))
                         .title(title)
@@ -61,8 +61,7 @@ public class CatalogEntryTest {
                         .build());
 
         // then
-        assertThat(t)
-                .isNotNull()
+        assertThat(error)
                 .isInstanceOf(InvalidDomainObjectError.class);
     }
 }

@@ -14,9 +14,11 @@
 package com.github.libraryclean.core.model.patron;
 
 import com.github.libraryclean.core.model.InvalidDomainObjectError;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchException;
 
 public class DaysTest {
 
@@ -25,10 +27,9 @@ public class DaysTest {
     void must_not_create_invalid_duration_in_days(int days) {
         // given
         // when
-        Exception error = Assertions.catchException(() -> Days.of(days));
+        Exception error = catchException(() -> Days.of(days));
         // then
-        Assertions.assertThat(error)
-                .isNotNull()
+        assertThat(error)
                 .isInstanceOf(InvalidDomainObjectError.class);
     }
 }

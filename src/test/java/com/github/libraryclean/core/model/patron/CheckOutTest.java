@@ -25,7 +25,7 @@ public class CheckOutTest {
 
         // then
 
-        assertThat(error).isNotNull()
+        assertThat(error)
                 .isInstanceOf(InvalidCheckOutStateError.class);
     }
 }

@@ -19,9 +19,9 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 
-import static com.github.libraryclean.core.model.LibraryDsl.anyDate;
-import static com.github.libraryclean.core.model.LibraryDsl.dayLater;
-import static org.assertj.core.api.Assertions.*;
+import static com.github.libraryclean.core.model.LibraryDsl.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchException;
 
 public class HoldTest {
 
@@ -33,7 +33,6 @@ public class HoldTest {
         Exception error = catchException(() -> Hold.of(null, anyDate()));
         // then
         assertThat(error)
-                .isNotNull()
                 .isInstanceOf(InvalidDomainObjectError.class);
 
     }
@@ -46,7 +45,6 @@ public class HoldTest {
         Exception error = catchException(() -> Hold.of(anyIsbn(), null));
         // then
         assertThat(error)
-                .isNotNull()
                 .isInstanceOf(InvalidDomainObjectError.class);
 
     }
@@ -106,7 +104,6 @@ public class HoldTest {
 
         // then
         assertThat(error)
-                .isNotNull()
                 .isInstanceOf(InvalidDomainObjectError.class);
     }
 
@@ -114,13 +111,13 @@ public class HoldTest {
     void must_not_cancel_hold_with_cancel_date_before_start_date() {
         // given
         LocalDate startDate = anyDate();
-        LocalDate dateCanceled = startDate.minusDays(1);
+        LocalDate invalidDateCanceled = dayBefore(startDate);
         Hold hold = Hold.of(anyIsbn(), startDate);
 
         // when
-        Exception error = catchThrowableOfType(() -> hold.cancel(dateCanceled), InvalidHoldStateError.class);
+        Exception error = catchException(() -> hold.cancel(invalidDateCanceled));
 
         // then
-        assertThat(error).isNotNull().isInstanceOf(InvalidHoldStateError.class);
+        assertThat(error).isInstanceOf(InvalidHoldStateError.class);
     }
 }
