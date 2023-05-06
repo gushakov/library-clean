@@ -72,9 +72,9 @@ public class HoldTest {
     void cancel_active_hold() {
         // given
 
-        LocalDate fromDate = anyDate();
-        LocalDate laterDate = dayLater(fromDate);
-        Hold originalHold = Hold.of(anyIsbn(), fromDate);
+        LocalDate startDate = anyDate();
+        LocalDate laterDate = dayLater(startDate);
+        Hold originalHold = Hold.of(anyIsbn(), startDate);
 
         // when
 
@@ -110,28 +110,24 @@ public class HoldTest {
     }
 
     @Test
-    void must_not_cancel_hold_with_cancel_date_before_from_date() {
+    void must_not_cancel_hold_with_cancel_date_before_start_date() {
         // given
-        LocalDate fromDate = anyDate();
-        LocalDate dateCanceled = fromDate.minusDays(1);
-        Hold hold = Hold.of(anyIsbn(), fromDate);
+        LocalDate startDate = anyDate();
+        LocalDate dateCanceled = startDate.minusDays(1);
+        Hold hold = Hold.of(anyIsbn(), startDate);
 
         // when
-        Optional<Exception> error = tryToCancel(hold, dateCanceled);
+        Exception error = catchThrowableOfType(() -> hold.cancel(dateCanceled), InvalidHoldStateError.class);
 
         // then
-        assertThat(error).isPresent();
-    }
-
-    private static Optional<Exception> tryToCancel(Hold hold, LocalDate dateCanceled) {
-        return Optional.ofNullable(catchThrowableOfType(() -> hold.cancel(dateCanceled), InvalidHoldStateError.class));
+        assertThat(error).isNotNull().isInstanceOf(InvalidHoldStateError.class);
     }
 
     private static LocalDate anyDate() {
         return LocalDate.now();
     }
 
-    private static LocalDate dayLater(LocalDate date){
+    private static LocalDate dayLater(LocalDate date) {
         return date.plusDays(1);
     }
 }

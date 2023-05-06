@@ -29,4 +29,11 @@ public class CheckOut {
      */
     Isbn isbn;
 
+
+
+    /**
+     * Duration of this checkout.
+     */
+    Days duration;
+
 }

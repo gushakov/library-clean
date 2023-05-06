@@ -51,7 +51,7 @@ public class Days {
     /**
      * Calculates the date resulting from adding this number of days to the given date.
      *
-     * @param date from date
+     * @param date start date
      * @return end date
      */
     public LocalDate addToDate(LocalDate date) {

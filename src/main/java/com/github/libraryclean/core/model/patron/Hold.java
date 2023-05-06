@@ -37,7 +37,7 @@ public class Hold {
     /**
      * Date when this hold was placed.
      */
-    LocalDate fromDate;
+    LocalDate startDate;
 
     /**
      * Duration of this hold in days. Can be {@code null} for open-ended holds.
@@ -58,13 +58,13 @@ public class Hold {
      * Constructs and returns a new instance of an open-ended hold.
      *
      * @param isbn     ISBN of the book on hold
-     * @param fromDate date this hold starts from
+     * @param startDate date this hold starts from
      * @return new hold
      */
-    public static Hold of(Isbn isbn, LocalDate fromDate) {
+    public static Hold of(Isbn isbn, LocalDate startDate) {
         return Hold.builder()
                 .isbn(isbn)
-                .fromDate(fromDate)
+                .startDate(startDate)
                 .build();
     }
 
@@ -79,16 +79,16 @@ public class Hold {
     public static Hold of(Isbn isbn, LocalDate fromDate, Days duration) {
         return Hold.builder()
                 .isbn(isbn)
-                .fromDate(fromDate)
+                .startDate(fromDate)
                 .duration(duration)
                 .build();
     }
 
     @Builder
-    private Hold(Isbn isbn, LocalDate fromDate, Days duration, LocalDate dateCompleted,
+    private Hold(Isbn isbn, LocalDate startDate, Days duration, LocalDate dateCompleted,
                  LocalDate dateCanceled) {
         this.isbn = notNull(isbn);
-        this.fromDate = notNull(fromDate);
+        this.startDate = notNull(startDate);
 
         this.duration = duration;
         this.dateCompleted = dateCompleted;
@@ -118,7 +118,7 @@ public class Hold {
      */
     public Optional<LocalDate> scheduledEndDate() {
         if (type() == HoldType.CLOSED_ENDED) {
-            return Optional.of(duration.addToDate(fromDate));
+            return Optional.of(duration.addToDate(startDate));
         } else {
             return Optional.empty();
         }
@@ -150,7 +150,7 @@ public class Hold {
      */
     public boolean hasExpired() {
         return scheduledEndDate()
-                .map(endDate -> LocalDate.now().isAfter(fromDate))
+                .map(endDate -> LocalDate.now().isAfter(startDate))
                 .orElse(false);
     }
 
@@ -172,9 +172,9 @@ public class Hold {
      */
     public Hold cancel(LocalDate dateCanceled) {
         // can only cancel hold if the cancellation date is posterior to the date of the start of the hold
-        if (notNull(dateCanceled).isBefore(fromDate)) {
+        if (notNull(dateCanceled).isBefore(startDate)) {
             throw new InvalidHoldStateError("Cancellation date: %s must be posterior to the start date: %s"
-                    .formatted(dateCanceled, fromDate));
+                    .formatted(dateCanceled, startDate));
         }
 
         // can only cancel an active hold
@@ -190,7 +190,7 @@ public class Hold {
     private HoldBuilder newHold() {
         return new HoldBuilder()
                 .isbn(isbn)
-                .fromDate(fromDate)
+                .startDate(startDate)
                 .duration(duration)
                 .dateCanceled(dateCanceled)
                 .dateCompleted(dateCompleted);
