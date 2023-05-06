@@ -3,9 +3,9 @@
 ## About
 
 This a revisit of a popular implementation of Library domain originally available from 
-[ddd-by-examples/library](https://github.com/ddd-by-examples/library). The idea is to implement the same domain but
-using Clean DDD approach this time. Having implemented the same domain will allow us to compare and contrast more easily 
-two different approaches. Here are the main differences from the original architecture and implementation.
+[ddd-by-examples/library](https://github.com/ddd-by-examples/library). The idea is to implement the similar domain but
+using Clean DDD approach this time. Having implemented similar domain will allow us to compare and contrast more easily 
+two approaches. Here are the main differences from the original architecture and implementation.
 
 - Clean DDD approach
 - Use case centric design
@@ -35,6 +35,15 @@ Here is the description for the Library domain, reprinted here from
 > an instance we decide whether it will be Circulating or Restricted. This enables us to have book with same ISBN as 
 > circulated and restricted at the same time (for instance, there is a book signed by the author that we want to keep 
 > as Restricted)
+
+## Our domain changes
+
+We are introducing some changes to the domain:
+
+1. There is only one library branch (implicit).
+2. Patron places a hold on a book by specifying the ISBN of the corresponding catalog entry. Once there is any
+_book instance_ available for checkout, it will automatically be registered as a checkout for the patron. If the only 
+books for a given catalog entry are restricted, this catalog entry can only be placed on hold by a researcher partner.
 
 ## Copyright notice and disclaimer
 
