@@ -61,12 +61,32 @@ public class Patron {
      */
     Set<CheckOut> checkOuts;
 
+    public static Patron of(PatronId patronId, String fullName, PatronLevel level) {
+        return Patron.builder()
+                .patronId(patronId)
+                .fullName(fullName)
+                .level(level)
+                .holds(Set.of())
+                .checkOuts(Set.of())
+                .build();
+    }
+
     @Builder
-    public Patron(PatronId patronId, String fullName, PatronLevel level, Set<Hold> holds, Set<CheckOut> checkOuts) {
+    private Patron(PatronId patronId, String fullName, PatronLevel level, Set<Hold> holds, Set<CheckOut> checkOuts) {
         this.patronId = notNull(patronId);
         this.fullName = notBlank(fullName);
         this.level = notNull(level);
         this.holds = copy(holds);
         this.checkOuts = copy(checkOuts);
     }
+
+    private PatronBuilder newPatron() {
+        return Patron.builder()
+                .patronId(patronId)
+                .fullName(fullName)
+                .level(level)
+                .holds(holds)
+                .checkOuts(checkOuts);
+    }
+
 }
