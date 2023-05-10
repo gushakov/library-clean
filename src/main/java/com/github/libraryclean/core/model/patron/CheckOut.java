@@ -98,6 +98,15 @@ public class CheckOut {
         return actualReturnDate != null;
     }
 
+    /**
+     * Returns whether this check-out is overdue for the given date.
+     *
+     * @return {@code true} if this check-out is overdue
+     */
+    public boolean isOverdue(LocalDate atDate) {
+        return !isBookReturned() && notNull(atDate).isAfter(scheduledReturnDate());
+    }
+
     private CheckOutBuilder newCheckOut() {
         return new CheckOutBuilder()
                 .bookId(bookId)

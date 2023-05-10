@@ -22,6 +22,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.github.libraryclean.core.Validator.*;
 
@@ -107,12 +108,23 @@ public class Patron {
         Hold hold = Hold.of(isbn, holdStartDate, holdDuration);
 
         // regular parton cannot issue open-ended holds
-        if (level == PatronLevel.REGULAR && hold.type() == HoldType.OPEN_ENDED){
+        if (level == PatronLevel.REGULAR && hold.type() == HoldType.OPEN_ENDED) {
             throw new IllegalHoldAttemptError("Regular patron cannot issue an open-ended holds");
         }
 
 
         return null;
+    }
+
+    /**
+     * Returns a set of any overdue checkouts.
+     *
+     * @return set of any overdue checkouts or an empty set if there are none
+     */
+    public Set<CheckOut> overdueCheckOuts(LocalDate atDate) {
+        return checkOuts.stream()
+                .filter(checkOut -> checkOut.isOverdue(atDate))
+                .collect(Collectors.toUnmodifiableSet());
     }
 
     private PatronBuilder newPatron() {
