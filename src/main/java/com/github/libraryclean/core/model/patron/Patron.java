@@ -13,12 +13,14 @@
 
 package com.github.libraryclean.core.model.patron;
 
+import com.github.libraryclean.core.model.catalog.Isbn;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 import static com.github.libraryclean.core.Validator.*;
@@ -80,6 +82,39 @@ public class Patron {
         this.checkOuts = copy(checkOuts);
     }
 
+    /**
+     * Puts a hold on any books with corresponding ISBN.
+     *
+     * @param isbn          ISBN of the corresponding catalog entry
+     * @param holdStartDate date on which a hold starts
+     * @param holdDuration  number of days for a hold (close-ended), {@code null}
+     *                      for an open-ended hold
+     * @return new {@code Patron} with an additional hold registered
+     */
+    public Patron holdBook(Isbn isbn, LocalDate holdStartDate, Days holdDuration) {
+
+        /*
+            Point of interest
+            -----------------
+
+            Since we only call this method from the "hold book" use case, we can assume
+            that ISBN corresponds to some existing catalog entry and that there are no
+            currently any books available (for checkout) with this ISBN.
+            Hence, here we must assert only the invariants related to this patron.
+         */
+
+        // create new hold
+        Hold hold = Hold.of(isbn, holdStartDate, holdDuration);
+
+        // regular parton cannot issue open-ended holds
+        if (level == PatronLevel.REGULAR && hold.type() == HoldType.OPEN_ENDED){
+            throw new IllegalHoldAttemptError("Regular patron cannot issue an open-ended holds");
+        }
+
+
+        return null;
+    }
+
     private PatronBuilder newPatron() {
         return Patron.builder()
                 .patronId(patronId)
@@ -88,5 +123,4 @@ public class Patron {
                 .holds(holds)
                 .checkOuts(checkOuts);
     }
-
 }
