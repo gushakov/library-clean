@@ -89,6 +89,15 @@ public class CheckOut {
                 .build();
     }
 
+    /**
+     * Returns {@code true} if this check-out was completed, i.e. book has been returned.
+     *
+     * @return {@code true} if this check-out was completed
+     */
+    public boolean isBookReturned() {
+        return actualReturnDate != null;
+    }
+
     private CheckOutBuilder newCheckOut() {
         return new CheckOutBuilder()
                 .bookId(bookId)

@@ -13,6 +13,7 @@
 
 package com.github.libraryclean.core.model.patron;
 
+import com.github.libraryclean.core.model.book.BookId;
 import com.github.libraryclean.core.model.catalog.Isbn;
 import lombok.Builder;
 import lombok.Value;
@@ -184,6 +185,29 @@ public class Hold {
                     .build();
         } else {
             throw new InvalidHoldStateError("Inactive hold cannot be canceled");
+        }
+    }
+
+    /**
+     * Successfully completes this hold, i.e. during the checkout of the referenced book.
+     *
+     * @param dateCompleted date this hold was completed
+     * @return new (completed) hold
+     */
+    public Hold complete(LocalDate dateCompleted) {
+        // can only complete hold if the completion date is posterior to the date of the start of the hold
+        if (notNull(dateCompleted).isBefore(startDate)) {
+            throw new InvalidHoldStateError("Completion date: %s must be posterior to the start date: %s"
+                    .formatted(dateCompleted, startDate));
+        }
+
+        // can only complete an active hold
+        if (isActive()) {
+            return newHold()
+                    .dateCompleted(dateCompleted)
+                    .build();
+        } else {
+            throw new InvalidHoldStateError("Inactive hold cannot be completed");
         }
     }
 

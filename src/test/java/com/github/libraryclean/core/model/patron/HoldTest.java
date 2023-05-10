@@ -108,6 +108,21 @@ public class HoldTest {
     }
 
     @Test
+    void must_not_complete_hold_with_null_complete_date() {
+        // given
+
+        Hold originalHold = anyOpenEndedHold();
+
+        // when
+
+        Exception error = catchException(() -> originalHold.complete(null));
+
+        // then
+        assertThat(error)
+                .isInstanceOf(InvalidDomainObjectError.class);
+    }
+
+    @Test
     void must_not_cancel_hold_with_cancel_date_before_start_date() {
         // given
         LocalDate startDate = anyDate();
@@ -116,6 +131,20 @@ public class HoldTest {
 
         // when
         Exception error = catchException(() -> hold.cancel(invalidDateCanceled));
+
+        // then
+        assertThat(error).isInstanceOf(InvalidHoldStateError.class);
+    }
+
+    @Test
+    void must_not_complete_hold_with_complete_date_before_start_date() {
+        // given
+        LocalDate startDate = anyDate();
+        LocalDate invalidDateCompleted = dayBefore(startDate);
+        Hold hold = Hold.of(anyIsbn(), startDate);
+
+        // when
+        Exception error = catchException(() -> hold.complete(invalidDateCompleted));
 
         // then
         assertThat(error).isInstanceOf(InvalidHoldStateError.class);

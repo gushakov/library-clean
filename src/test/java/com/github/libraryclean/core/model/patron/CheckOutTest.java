@@ -3,10 +3,10 @@ package com.github.libraryclean.core.model.patron;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 import static com.github.libraryclean.core.model.LibraryDsl.*;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchException;
+import static org.assertj.core.api.Assertions.*;
 
 public class CheckOutTest {
 
@@ -27,5 +27,27 @@ public class CheckOutTest {
 
         assertThat(error)
                 .isInstanceOf(InvalidCheckOutStateError.class);
+    }
+
+    @Test
+    void actual_return_date_must_be_set_after_book_is_returned() {
+        // given
+
+        LocalDate startDate = anyDate();
+        LocalDate returnDate = dayLater(startDate);
+        CheckOut checkOut = CheckOut.of(anyBookId(), startDate, Days.of(10));
+
+        // when
+
+        CheckOut completedCheckout = checkOut.returnBook(returnDate);
+
+        // then
+
+        assertThat(completedCheckout.getActualReturnDate())
+                .isCloseTo(returnDate, within(1, ChronoUnit.DAYS));
+
+        // and
+
+        assertThat(completedCheckout.isBookReturned()).isTrue();
     }
 }
