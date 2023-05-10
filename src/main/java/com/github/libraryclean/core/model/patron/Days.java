@@ -13,15 +13,16 @@
 
 package com.github.libraryclean.core.model.patron;
 
-import com.github.libraryclean.core.Validator;
 import com.github.libraryclean.core.model.InvalidDomainObjectError;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Value;
 
-import java.time.Duration;
 import java.time.LocalDate;
+
+import static com.github.libraryclean.core.Validator.notNull;
+import static com.github.libraryclean.core.Validator.positive;
 
 /**
  * Duration in days.
@@ -30,7 +31,7 @@ import java.time.LocalDate;
 public class Days {
 
     @Getter(AccessLevel.NONE)
-    Duration duration;
+    int numberOfDays;
 
     public static Days of(int days) {
         return Days.builder()
@@ -41,7 +42,7 @@ public class Days {
     @Builder
     private Days(int days) {
         try {
-            this.duration = Duration.ofDays(Long.parseLong(String.valueOf(Validator.positive(days))));
+            this.numberOfDays = positive(days);
         } catch (NumberFormatException e) {
             throw new InvalidDomainObjectError("Cannot parse days from %d. %s".formatted(days,
                     e.getMessage()));
@@ -55,7 +56,7 @@ public class Days {
      * @return end date
      */
     public LocalDate addToDate(LocalDate date) {
-        return date.plus(duration);
+        return notNull(date).plusDays(this.numberOfDays);
     }
 
 }

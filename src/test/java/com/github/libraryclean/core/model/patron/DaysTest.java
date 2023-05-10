@@ -14,8 +14,12 @@
 package com.github.libraryclean.core.model.patron;
 
 import com.github.libraryclean.core.model.InvalidDomainObjectError;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+
+import java.time.LocalDate;
+import java.time.Month;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchException;
@@ -31,5 +35,21 @@ public class DaysTest {
         // then
         assertThat(error)
                 .isInstanceOf(InvalidDomainObjectError.class);
+    }
+
+    @Test
+    void add_days_to_date() {
+        // given
+
+        LocalDate startDate = LocalDate.of(2023, Month.JANUARY, 1);
+
+        // when
+
+        LocalDate endDate = Days.of(10).addToDate(startDate);
+
+        // then
+
+        assertThat(endDate.toEpochDay() - startDate.toEpochDay())
+                .isEqualTo(10);
     }
 }

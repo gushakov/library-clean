@@ -50,4 +50,22 @@ public class CheckOutTest {
 
         assertThat(completedCheckout.isBookReturned()).isTrue();
     }
+
+    @Test
+    void overdue_at_date_later_then_scheduled_return_date() {
+
+        // given
+
+        LocalDate startDate = anyDate();
+        Days duration = Days.of(10);
+        LocalDate atDate = startDate.plusDays(20);
+        CheckOut checkOut = CheckOut.of(anyBookId(), startDate, duration);
+
+        // when
+        boolean overdue = checkOut.isOverdue(atDate);
+
+        // then
+        assertThat(overdue).isTrue();
+
+    }
 }
