@@ -13,7 +13,6 @@
 
 package com.github.libraryclean.core.model.patron;
 
-import com.github.libraryclean.core.model.book.BookId;
 import com.github.libraryclean.core.model.catalog.Isbn;
 import lombok.Builder;
 import lombok.Value;
@@ -209,6 +208,15 @@ public class Hold {
         } else {
             throw new InvalidHoldStateError("Inactive hold cannot be completed");
         }
+    }
+
+    /**
+     * Returns a copy of this hold.
+     *
+     * @return copy of this hold
+     */
+    public Hold copy() {
+        return newHold().build();
     }
 
     private HoldBuilder newHold() {

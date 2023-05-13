@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -86,13 +87,15 @@ public class Patron {
     /**
      * Puts a hold on any books with corresponding ISBN.
      *
-     * @param isbn          ISBN of the corresponding catalog entry
-     * @param holdStartDate date on which a hold starts
-     * @param holdDuration  number of days for a hold (close-ended), {@code null}
-     *                      for an open-ended hold
+     * @param isbn                   ISBN of the corresponding catalog entry
+     * @param holdStartDate          date on which a hold starts
+     * @param holdDuration           number of days for a hold (closed-ended), {@code null}
+     *                               for an open-ended hold
+     * @param maxNumOverdueCheckOuts maximum number of overdue checkouts allowed for a hold
+     *                               to be registered successfully
      * @return new {@code Patron} with an additional hold registered
      */
-    public Patron holdBook(Isbn isbn, LocalDate holdStartDate, Days holdDuration) {
+    public Patron holdBook(Isbn isbn, LocalDate holdStartDate, Days holdDuration, int maxNumOverdueCheckOuts) {
 
         /*
             Point of interest
@@ -100,7 +103,8 @@ public class Patron {
 
             Since we only call this method from the "hold book" use case, we can assume
             that ISBN corresponds to some existing catalog entry and that there are no
-            currently any books available (for checkout) with this ISBN.
+            currently any books available (for checkout) with this ISBN. We can also
+            be assured that there is no other hold on the same ISBN.
             Hence, here we must assert only the invariants related to this patron.
          */
 
@@ -109,9 +113,16 @@ public class Patron {
 
         // regular parton cannot issue open-ended holds
         if (level == PatronLevel.REGULAR && hold.type() == HoldType.OPEN_ENDED) {
-            throw new IllegalHoldAttemptError("Regular patron cannot issue an open-ended holds");
+            throw new InsufficientLevelForHoldTypeError("Regular patron cannot issue an open-ended holds");
         }
 
+        // cannot exceed the maximum number of overdue checkouts for a successful hold
+        if (overdueCheckOuts(holdStartDate).size() > maxNumOverdueCheckOuts) {
+            throw new TooManyOverdueCheckoutsError("Cannot issue any holds after the maximum number of " +
+                    "overdue check-outs has been reached");
+        }
+
+        // check if this patron already holds this
 
         return null;
     }
@@ -125,6 +136,19 @@ public class Patron {
         return checkOuts.stream()
                 .filter(checkOut -> checkOut.isOverdue(atDate))
                 .collect(Collectors.toUnmodifiableSet());
+    }
+
+    /**
+     * Returns a copy of a hold among this patron's active holds with the
+     * matching {@code isbn}.
+     *
+     * @param isbn ISBN of the book on hold
+     * @return optional with a copy of the matching hold or an empty optional
+     */
+    public Optional<Hold> hold(Isbn isbn) {
+        return holds.stream()
+                .filter(hold -> notNull(isbn).equals(hold.getIsbn()))
+                .findFirst();
     }
 
     private PatronBuilder newPatron() {

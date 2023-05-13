@@ -49,4 +49,10 @@ public interface PersistenceGatewayOutputPort {
      * @throws PersistenceError if no patron with matching ID could be found
      */
     Patron loadPatron(PatronId patronId);
+
+    /**
+     * Rollbacks current transaction.
+     */
+    void rollback();
+
 }
