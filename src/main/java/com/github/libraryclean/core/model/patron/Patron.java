@@ -101,11 +101,12 @@ public class Patron {
             Point of interest
             -----------------
 
-            Since we only call this method from the "hold book" use case, we can assume
+            This method from the "hold book" use case, we can assume
             that ISBN corresponds to some existing catalog entry and that there are no
             currently any books available (for checkout) with this ISBN. We can also
             be assured that there is no other hold on the same ISBN.
-            Hence, here we must assert only the invariants related to this patron.
+            Here we must only assert the invariants in relation to this patron (aggregate)
+            and the given parameters of the hold.
          */
 
         // create new hold
