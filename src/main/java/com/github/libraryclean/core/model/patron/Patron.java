@@ -100,7 +100,10 @@ public class Patron {
         /*
             Point of interest
             -----------------
-
+            We have asserted preconditions external to this instance of "Patron" aggregate
+            in the use case (caller of this method). So here we can concentrate on actually
+            asserting intra-aggregate invariants and on actually performing the logic of
+            creating and registering a new book hold.
          */
 
         // create new hold
@@ -108,16 +111,14 @@ public class Patron {
 
         // regular parton cannot issue open-ended holds
         if (level == PatronLevel.REGULAR && hold.type() == HoldType.OPEN_ENDED) {
-            throw new InsufficientLevelForHoldTypeError("Regular patron cannot issue an open-ended holds");
+            throw new InsufficientPatronLevelForHoldTypeError(hold, "Regular patron cannot issue an open-ended holds");
         }
 
         // cannot exceed the maximum number of overdue checkouts for a successful hold
         if (overdueCheckOuts(holdStartDate).size() > maxNumOverdueCheckOuts) {
-            throw new TooManyOverdueCheckoutsError("Cannot issue any holds after the maximum number of " +
+            throw new TooManyOverdueCheckoutsError(hold,"Cannot issue any holds after the maximum number of " +
                     "overdue check-outs has been reached");
         }
-
-        // check if this patron already holds this
 
         return null;
     }

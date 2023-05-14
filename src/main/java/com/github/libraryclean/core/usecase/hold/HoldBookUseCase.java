@@ -22,10 +22,8 @@ public class HoldBookUseCase implements HoldBookInputPort {
     private final ConfigurationOutputPort configOps;
 
     /*
-        Point of interest
-        -----------------
-        We are marking this use case as transactional because it will
-        involve modifying the persistence store: i.e., when an
+        Note that we are marking this use case as transactional because
+        it will involve modifying the persistence store: i.e., when an
         additional hold must be recorded for a patron.
      */
     @Override
@@ -121,8 +119,12 @@ public class HoldBookUseCase implements HoldBookInputPort {
                  */
 
                 patronWithAdditionalHold = patron.holdBook(isbn, holdStartDate, holdDuration, maxNumOverdueCheckOuts);
-            } catch (InsufficientLevelForHoldTypeError e) {
-                throw new RuntimeException(e);
+            } catch (InsufficientPatronLevelForHoldTypeError e) {
+                presenter.presentErrorOnInsufficientPatronLevelForHoldType(isbn, patron, e.getHold());
+                return;
+            } catch (TooManyOverdueCheckoutsError e) {
+                presenter.presentErrorOnTooManyOverdueCheckouts(isbn, patron, e.getHold());
+                return;
             }
 
             // use case completed successfully
@@ -132,23 +134,16 @@ public class HoldBookUseCase implements HoldBookInputPort {
             presenter.presentError(e);
             return;
         } finally {
-            /*
-                Point of interest
-                -----------------
-                We roll back any current transaction if the use case
-                did not complete successfully.
-             */
+
+            // roll back any current transaction if the use case
+            // did not complete successfully
             if (!success) {
                 gatewayOps.rollback();
             }
         }
 
-        /*
-            Point of interest
-            -----------------
-            Once the use case completes successfully, present "Patron"
-            with the additional hold registered.
-         */
+        // present successful outcome of the book holding use case: a patron
+        // with additional active hold
         presenter.presentSuccessfulPutOnHoldOfBookForPatron(patronWithAdditionalHold);
     }
 }
