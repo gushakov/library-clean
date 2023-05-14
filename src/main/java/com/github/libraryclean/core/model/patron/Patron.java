@@ -111,7 +111,7 @@ public class Patron {
         Hold hold = Hold.of(isbn, holdStartDate, holdDuration);
 
         // check if patron has a hold on a book with the same ISBN
-        if (hasHold(isbn).isPresent()){
+        if (hasHold(isbn).isPresent()) {
             throw new DuplicateHoldError(hold, "Illegal hold error: patron already has an active hold for " +
                     "catalog entry with the same ISBN");
         }
@@ -123,7 +123,7 @@ public class Patron {
 
         // cannot exceed the maximum number of overdue checkouts for a successful hold
         if (overdueCheckOuts(holdStartDate).size() > maxNumOverdueCheckOuts) {
-            throw new TooManyOverdueCheckoutsError(hold,"Cannot issue any holds after the maximum number of " +
+            throw new TooManyOverdueCheckoutsError(hold, "Cannot issue any holds after the maximum number of " +
                     "overdue check-outs has been reached");
         }
 
@@ -170,13 +170,13 @@ public class Patron {
 
     // this method is package-private so that we can use it from tests
 
-    Patron withAdditionalHold(Hold hold){
-       return newPatron()
+    Patron withAdditionalHold(Hold hold) {
+        return newPatron()
                 .holds(addOne(this.holds, hold))
                 .build();
     }
 
-    private Set<Hold> addOne(Set<Hold> holds, Hold additionalHold){
+    private Set<Hold> addOne(Set<Hold> holds, Hold additionalHold) {
         return Stream.concat(holds.stream(), Stream.of(additionalHold))
                 .collect(Collectors.toUnmodifiableSet());
     }

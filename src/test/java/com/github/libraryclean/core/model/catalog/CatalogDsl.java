@@ -16,7 +16,6 @@ public class CatalogDsl {
     }
 
 
-
     public static CatalogEntry catalogEntry(String isbn) {
         return Optional.ofNullable(catalogEntries().get(isbn)).orElseThrow();
     }

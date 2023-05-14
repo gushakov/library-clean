@@ -119,11 +119,10 @@ public class HoldBookUseCase implements HoldBookInputPort {
                  */
 
                 patronWithAdditionalHold = patron.holdBook(isbn, holdStartDate, holdDuration, maxNumOverdueCheckOuts);
-            } catch (DuplicateHoldError e){
+            } catch (DuplicateHoldError e) {
                 presenter.presentErrorOnDuplicateHold(isbn, patron, e.getHold());
                 return;
-            }
-            catch (InsufficientPatronLevelForHoldTypeError e) {
+            } catch (InsufficientPatronLevelForHoldTypeError e) {
                 presenter.presentErrorOnInsufficientPatronLevelForHoldType(isbn, patron, e.getHold());
                 return;
             } catch (TooManyOverdueCheckoutsError e) {

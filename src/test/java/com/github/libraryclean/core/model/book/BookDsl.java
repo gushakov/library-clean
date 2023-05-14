@@ -1,5 +1,6 @@
 package com.github.libraryclean.core.model.book;
 
+import com.github.libraryclean.core.model.Ids;
 import com.github.libraryclean.core.model.catalog.Isbn;
 
 import java.util.Map;
@@ -21,7 +22,7 @@ public class BookDsl {
     }
 
     public static BookId anyBookId() {
-        return BookId.of("ZuWLBP");
+        return BookId.of(Ids.next());
     }
 
 

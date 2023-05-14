@@ -14,9 +14,14 @@
 package com.github.libraryclean;
 
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
+import com.github.libraryclean.core.model.Ids;
 import org.junit.jupiter.api.Test;
 
-import java.security.SecureRandom;
+import java.util.HashSet;
+import java.util.Set;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 /**
  * This test generates some random unique IDs used in mock models. It is based on JNano ID library.
@@ -26,20 +31,15 @@ import java.security.SecureRandom;
  */
 public class IdsTest {
 
-    private final static char[] alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".toCharArray();
-
-    private final static SecureRandom random = new SecureRandom();
-
-    private final static int length = 6;
-
-    private String next() {
-        return NanoIdUtils.randomNanoId(random, alphabet, length);
-    }
-
     @Test
-    void generate_some_ids() {
+    void generates_unique_ids() {
+        Set<String> ids = new HashSet<>();
         for (int i = 0; i < 10; i++) {
-            System.out.println(next());
+            String next = Ids.next();
+            System.out.println(next);
+            ids.add(next);
         }
+        // assert all IDs are unique
+        assertThat(ids).hasSize(10);
     }
 }

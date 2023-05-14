@@ -59,6 +59,7 @@ public interface PersistenceGatewayOutputPort {
 
     /**
      * Saves patron in the persistence store.
+     *
      * @param patron patron to save
      */
     void savePatron(Patron patron);
