@@ -2,20 +2,23 @@ package com.github.libraryclean.core.model.patron;
 
 import java.time.LocalDate;
 
-import static com.github.libraryclean.core.model.LibraryDsl.anyDate;
 import static com.github.libraryclean.core.model.catalog.CatalogDsl.anyIsbn;
 
 public class PatronDsl {
 
-    public static Days holdDurationNotSpecified(){
+    public static Days holdDurationNotSpecified() {
         return null;
     }
 
-    public static int anyNumberOfMaxOverdueCheckouts(){
+    public static int anyNumberOfMaxOverdueCheckouts() {
         return 2;
     }
 
     public static Hold anyHold(LocalDate holdStartDate) {
+        return Hold.of(anyIsbn(), holdStartDate);
+    }
+
+    public static Hold anyOpenEndedHold(LocalDate holdStartDate) {
         return Hold.of(anyIsbn(), holdStartDate);
     }
 
@@ -27,8 +30,16 @@ public class PatronDsl {
         return Patron.of(anyPatronId(), "George Clooney", PatronLevel.REGULAR);
     }
 
-    public static Patron aRegularPatronWithActiveHold(Hold hold) {
-        return anyRegularPatron().withAdditionalHold(hold);
+    public static Patron anyResearcherPatron() {
+        return Patron.of(anyPatronId(), "Brad Pitt", PatronLevel.RESEARCHER);
+    }
+
+    public static Patron anyPatron() {
+        return anyRegularPatron();
+    }
+
+    public static Patron anyPatronWithActiveHold(Hold hold) {
+        return anyPatron().withAdditionalHold(hold);
     }
 
 }
