@@ -57,4 +57,9 @@ public interface PersistenceGatewayOutputPort {
      */
     void rollback();
 
+    /**
+     * Saves patron in the persistence store.
+     * @param patron patron to save
+     */
+    void savePatron(Patron patron);
 }

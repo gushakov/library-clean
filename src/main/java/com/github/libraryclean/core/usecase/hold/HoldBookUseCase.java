@@ -58,7 +58,7 @@ public class HoldBookUseCase implements HoldBookInputPort {
             try {
                 patron = gatewayOps.loadPatron(patronId);
             } catch (PersistenceError e) {
-                presenter.presentError(e);
+                presenter.presentErrorLoadingPatron(patronId);
                 return;
             }
 
@@ -81,7 +81,7 @@ public class HoldBookUseCase implements HoldBookInputPort {
             // if there are any books available, this is an error: patron can
             // simply check one of them out
             if (!availableBooks.isEmpty()) {
-                presenter.presentErrorOnTryToHoldAvailableBook(isbn);
+                presenter.presentErrorOnTryingToPutHoldOnAvailableBook(isbn);
                 return;
             }
 
@@ -124,6 +124,14 @@ public class HoldBookUseCase implements HoldBookInputPort {
                 return;
             } catch (TooManyOverdueCheckoutsError e) {
                 presenter.presentErrorOnTooManyOverdueCheckouts(isbn, patron, e.getHold());
+                return;
+            }
+
+            // persist the modified state: patron with an additional active book hold
+            try {
+                gatewayOps.savePatron(patronWithAdditionalHold);
+            } catch (PersistenceError e) {
+                presenter.presentErrorSavingPatronWithAdditionalHold(patronWithAdditionalHold);
                 return;
             }
 
