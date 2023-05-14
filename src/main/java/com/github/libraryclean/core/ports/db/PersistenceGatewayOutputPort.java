@@ -19,6 +19,7 @@ import com.github.libraryclean.core.model.catalog.Isbn;
 import com.github.libraryclean.core.model.patron.Patron;
 import com.github.libraryclean.core.model.patron.PatronId;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 public interface PersistenceGatewayOutputPort {
@@ -32,14 +33,15 @@ public interface PersistenceGatewayOutputPort {
     boolean existsInCatalog(Isbn isbn);
 
     /**
-     * Returns a set of available books with the corresponding ISBN. Available books
-     * are books which are not currently held or checkout.
+     * Returns a set of available books with the corresponding ISBN on a particular
+     * date. Available books are books which are not currently held or checkout.
      *
      * @param isbn ISBN
      * @param type type of the book to restrict the search, if {@code null}, search for any type
+     * @param date date to check
      * @return set of available books, empty set if no books are available
      */
-    Set<Book> findAvailableBooks(Isbn isbn, BookType type);
+    Set<Book> findAvailableBooks(Isbn isbn, BookType type, LocalDate date);
 
     /**
      * Loads a {@code Patron} with corresponding ID.

@@ -10,6 +10,7 @@ import com.github.libraryclean.core.ports.db.PersistenceError;
 import com.github.libraryclean.core.ports.db.PersistenceGatewayOutputPort;
 import lombok.RequiredArgsConstructor;
 
+import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.Set;
 
@@ -20,20 +21,22 @@ public class HoldBookUseCase implements HoldBookInputPort {
     private final PersistenceGatewayOutputPort gatewayOps;
     private final ConfigurationOutputPort configOps;
 
+    /*
+        Point of interest
+        -----------------
+        We are marking this use case as transactional because it will
+        involve modifying the persistence store: i.e., when an
+        additional hold must be recorded for a patron.
+     */
     @Override
+    @Transactional
     public void holdBook(String patronIdArg, String isbnArg, LocalDate holdStartDate, boolean openEndedHold) {
 
-        /*
-            Point of interest
-            -----------------
-            Declare any variables which may need to be presented
-            during successful completion of the use case or any
-            error presentation.
-         */
         PatronId patronId;
         Isbn isbn;
         Patron patronWithAdditionalHold;
 
+        // outcome of the use case: success or error
         boolean success = false;
         try {
 
@@ -67,10 +70,10 @@ public class HoldBookUseCase implements HoldBookInputPort {
             try {
                 if (patron.getLevel() == PatronLevel.REGULAR) {
                     // for regular patrons only circulating books may be available
-                    availableBooks = gatewayOps.findAvailableBooks(isbn, BookType.CIRCULATING);
+                    availableBooks = gatewayOps.findAvailableBooks(isbn, BookType.CIRCULATING, holdStartDate);
                 } else {
                     // for researchers book of any type may be available
-                    availableBooks = gatewayOps.findAvailableBooks(isbn, null);
+                    availableBooks = gatewayOps.findAvailableBooks(isbn, null, holdStartDate);
                 }
             } catch (PersistenceError e) {
                 presenter.presentError(e);
@@ -93,12 +96,36 @@ public class HoldBookUseCase implements HoldBookInputPort {
             int maxNumOverdueCheckOuts = configOps.maxNumberOverdueCheckoutsForHold();
 
             try {
-                // actual logic for the new hold will be delegated to "Patron" (aggregate)
-                patronWithAdditionalHold = patron.holdBook(isbn, LocalDate.now(), holdDuration, maxNumOverdueCheckOuts);
+
+                /*
+                    Point of interest
+                    -----------------
+                    At this point we have asserted all the preconditions necessary for
+                    a book hold logic to be processed by the involved "Patron" aggregate.
+                    These are:
+                        - inputs (IDs) correspond to valid domain objects
+                        - ISBN must correspond to an existing catalog entry
+                        - there must not be any books available for checkout
+                          to the patron at the date of the hold
+
+                    We have also gathered all the information external to "Patron"
+                    aggregate (from application configuration) and which
+                    it will require to process its book holding logic. These are:
+                        - the number of days for closed-ended holds
+                        - maximum number of overdue checkouts before hold can be processed
+
+                    After this point, it's up to the instance of "Patron" aggregate to
+                    perform actual logic related to the book hold. We load the instance
+                    of the aggregate and call the corresponding business method providing
+                    it with all the necessary parameters.
+                 */
+
+                patronWithAdditionalHold = patron.holdBook(isbn, holdStartDate, holdDuration, maxNumOverdueCheckOuts);
             } catch (InsufficientLevelForHoldTypeError e) {
                 throw new RuntimeException(e);
             }
 
+            // use case completed successfully
             success = true;
         } catch (Exception e) {
             // present any errors we may have missed
@@ -108,7 +135,7 @@ public class HoldBookUseCase implements HoldBookInputPort {
             /*
                 Point of interest
                 -----------------
-                Don't forget to roll back any current transaction if the use case
+                We roll back any current transaction if the use case
                 did not complete successfully.
              */
             if (!success) {
