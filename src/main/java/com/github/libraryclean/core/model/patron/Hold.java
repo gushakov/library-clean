@@ -210,15 +210,6 @@ public class Hold {
         }
     }
 
-    /**
-     * Returns a copy of this hold.
-     *
-     * @return copy of this hold
-     */
-    public Hold copy() {
-        return newHold().build();
-    }
-
     private HoldBuilder newHold() {
         return new HoldBuilder()
                 .isbn(isbn)

@@ -20,6 +20,8 @@ public interface HoldBookPresenterOutputPort {
 
     void presentErrorLoadingPatron(PatronId patronId);
 
+    void presentErrorOnDuplicateHold(Isbn isbn, Patron patron, Hold hold);
+
     void presentErrorSavingPatronWithAdditionalHold(Patron patronWithAdditionalHold);
 
     void presentSuccessfulPutOnHoldOfBookForPatron(Patron patronWithAdditionalHold);

@@ -24,6 +24,7 @@ import java.time.LocalDate;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.github.libraryclean.core.Validator.*;
 
@@ -109,7 +110,13 @@ public class Patron {
         // create new hold
         Hold hold = Hold.of(isbn, holdStartDate, holdDuration);
 
-        // regular parton cannot issue open-ended holds
+        // check if patron has a hold on a book with the same ISBN
+        if (hasHold(isbn).isPresent()){
+            throw new DuplicateHoldError(hold, "Illegal hold error: patron already has an active hold for " +
+                    "catalog entry with the same ISBN");
+        }
+
+        // regular patron cannot issue open-ended holds
         if (level == PatronLevel.REGULAR && hold.type() == HoldType.OPEN_ENDED) {
             throw new InsufficientPatronLevelForHoldTypeError(hold, "Regular patron cannot issue an open-ended holds");
         }
@@ -120,7 +127,14 @@ public class Patron {
                     "overdue check-outs has been reached");
         }
 
-        return null;
+        /*
+            Now we can proceed with registering a new active hold for this partner. Since
+            all our domain objects are immutable, we create a new copy of "Patron" entity
+            with a new set of active holds containing the additional hold.
+         */
+        return newPatron()
+                .holds(addOne(this.holds, hold))
+                .build();
     }
 
     /**
@@ -141,7 +155,7 @@ public class Patron {
      * @param isbn ISBN of the book on hold
      * @return optional with a copy of the matching hold or an empty optional
      */
-    public Optional<Hold> hold(Isbn isbn) {
+    public Optional<Hold> hasHold(Isbn isbn) {
         return holds.stream()
                 .filter(hold -> notNull(isbn).equals(hold.getIsbn()))
                 .findFirst();
@@ -154,5 +168,10 @@ public class Patron {
                 .level(level)
                 .holds(holds)
                 .checkOuts(checkOuts);
+    }
+
+    private Set<Hold> addOne(Set<Hold> holds, Hold additionalHold){
+        return Stream.concat(holds.stream(), Stream.of(additionalHold))
+                .collect(Collectors.toUnmodifiableSet());
     }
 }
