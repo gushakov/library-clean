@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
 import static com.github.libraryclean.core.model.LibraryDsl.*;
+import static com.github.libraryclean.core.model.book.BookDsl.anyBookId;
 import static org.assertj.core.api.Assertions.*;
 
 public class CheckOutTest {

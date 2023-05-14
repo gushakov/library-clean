@@ -132,9 +132,7 @@ public class Patron {
             all our domain objects are immutable, we create a new copy of "Patron" entity
             with a new set of active holds containing the additional hold.
          */
-        return newPatron()
-                .holds(addOne(this.holds, hold))
-                .build();
+        return withAdditionalHold(hold);
     }
 
     /**
@@ -168,6 +166,14 @@ public class Patron {
                 .level(level)
                 .holds(holds)
                 .checkOuts(checkOuts);
+    }
+
+    // this method is package-private so that we can use it from tests
+
+    Patron withAdditionalHold(Hold hold){
+       return newPatron()
+                .holds(addOne(this.holds, hold))
+                .build();
     }
 
     private Set<Hold> addOne(Set<Hold> holds, Hold additionalHold){
