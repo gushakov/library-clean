@@ -7,6 +7,14 @@ import static com.github.libraryclean.core.model.catalog.CatalogDsl.anyIsbn;
 
 public class PatronDsl {
 
+    public static Days holdDurationNotSpecified(){
+        return null;
+    }
+
+    public static int anyNumberOfMaxOverdueCheckouts(){
+        return 2;
+    }
+
     public static Hold anyHold(LocalDate holdStartDate) {
         return Hold.of(anyIsbn(), holdStartDate);
     }
@@ -19,8 +27,8 @@ public class PatronDsl {
         return Patron.of(anyPatronId(), "George Clooney", PatronLevel.REGULAR);
     }
 
-    public static Patron aRegularPatronWithActiveHold() {
-        return anyRegularPatron().withAdditionalHold(anyHold(anyDate()));
+    public static Patron aRegularPatronWithActiveHold(Hold hold) {
+        return anyRegularPatron().withAdditionalHold(hold);
     }
 
 }
