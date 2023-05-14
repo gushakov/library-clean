@@ -128,7 +128,7 @@ public class Patron {
         }
 
         /*
-            Now we can proceed with registering a new active hold for this partner. Since
+            Now we can proceed with registering a new active hold for this patron. Since
             all our domain objects are immutable, we create a new copy of "Patron" entity
             with a new set of active holds containing the additional hold.
          */

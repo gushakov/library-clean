@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.catchException;
 public class PatronTest {
 
     @Test
-    void partner_must_not_have_duplicate_holds() {
+    void patron_must_not_have_duplicate_holds() {
 
         // given
 
