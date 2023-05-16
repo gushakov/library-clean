@@ -90,18 +90,18 @@ public class CheckOut {
     }
 
     /**
-     * Returns {@code true} if this check-out was completed, i.e. book has been returned.
+     * Returns {@code true} if this checkout was completed, i.e. book has been returned.
      *
-     * @return {@code true} if this check-out was completed
+     * @return {@code true} if this checkout was completed
      */
     public boolean isBookReturned() {
         return actualReturnDate != null;
     }
 
     /**
-     * Returns whether this check-out is overdue for the given date.
+     * Returns whether this checkout is overdue for the given date.
      *
-     * @return {@code true} if this check-out is overdue
+     * @return {@code true} if this checkout is overdue
      */
     public boolean isOverdue(LocalDate atDate) {
         return !isBookReturned() && notNull(atDate).isAfter(scheduledReturnDate());

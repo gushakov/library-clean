@@ -111,7 +111,7 @@ public class Patron {
         Hold hold = Hold.of(isbn, holdStartDate, holdDuration);
 
         // check if patron has a hold on a book with the same ISBN
-        if (hasHold(isbn).isPresent()) {
+        if (findHold(isbn).isPresent()) {
             throw new DuplicateHoldError(hold, "Illegal hold error: patron already has an active hold for " +
                     "catalog entry with the same ISBN");
         }
@@ -124,7 +124,7 @@ public class Patron {
         // cannot exceed the maximum number of overdue checkouts for a successful hold
         if (overdueCheckOuts(holdStartDate).size() > maxNumOverdueCheckOuts) {
             throw new TooManyOverdueCheckoutsError(hold, "Cannot issue any holds after the maximum number of " +
-                    "overdue check-outs has been reached");
+                    "overdue checkouts has been reached");
         }
 
         /*
@@ -153,7 +153,7 @@ public class Patron {
      * @param isbn ISBN of the book on hold
      * @return optional with a copy of the matching hold or an empty optional
      */
-    public Optional<Hold> hasHold(Isbn isbn) {
+    public Optional<Hold> findHold(Isbn isbn) {
         return holds.stream()
                 .filter(hold -> notNull(isbn).equals(hold.getIsbn()))
                 .findFirst();
