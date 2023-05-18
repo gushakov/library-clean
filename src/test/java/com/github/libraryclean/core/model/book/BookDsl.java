@@ -17,13 +17,16 @@ public class BookDsl {
         );
     }
 
-    public static Book book(String bokId) {
-        return Optional.ofNullable(books().get(bokId)).orElseThrow();
+    public static Book book(String bookId) {
+        return Optional.ofNullable(books().get(bookId)).orElseThrow();
     }
 
     public static BookId anyBookId() {
         return BookId.of(Ids.next());
     }
 
+    public static Book anyBook() {
+        return book("ZuWLBP");
+    }
 
 }
