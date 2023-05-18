@@ -17,6 +17,13 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class HoldBookUseCase implements HoldBookInputPort {
 
+    /*
+        We have borrowed this technique from DDDSample:
+        https://github.com/citerus/dddsample-core
+     */
+    private static final BookType ANY_BOOK_TYPE = null;
+    private static final Days DURATION_NOT_APPLICABLE = null;
+
     private final HoldBookPresenterOutputPort presenter;
     private final PersistenceGatewayOutputPort gatewayOps;
     private final ConfigurationOutputPort configOps;
@@ -71,7 +78,7 @@ public class HoldBookUseCase implements HoldBookInputPort {
                     availableBooks = gatewayOps.findAvailableBooks(isbn, BookType.CIRCULATING, holdStartDate);
                 } else {
                     // for researchers book of any type may be available
-                    availableBooks = gatewayOps.findAvailableBooks(isbn, null, holdStartDate);
+                    availableBooks = gatewayOps.findAvailableBooks(isbn, ANY_BOOK_TYPE, holdStartDate);
                 }
             } catch (PersistenceError e) {
                 presenter.presentError(e);
@@ -87,7 +94,7 @@ public class HoldBookUseCase implements HoldBookInputPort {
 
             // look up duration of closed-ended holds and a maximum number of overdue
             // checkouts from the configuration of the application
-            Days holdDuration = null;
+            Days holdDuration = DURATION_NOT_APPLICABLE;
             if (!openEndedHold) {
                 holdDuration = configOps.closedEndedHoldDuration();
             }
