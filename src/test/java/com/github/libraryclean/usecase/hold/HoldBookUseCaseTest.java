@@ -3,6 +3,7 @@ package com.github.libraryclean.usecase.hold;
 import com.github.libraryclean.core.model.book.Book;
 import com.github.libraryclean.core.model.book.BookType;
 import com.github.libraryclean.core.model.catalog.Isbn;
+import com.github.libraryclean.core.model.patron.Days;
 import com.github.libraryclean.core.model.patron.Patron;
 import com.github.libraryclean.core.ports.config.ConfigurationOutputPort;
 import com.github.libraryclean.core.ports.db.PersistenceGatewayOutputPort;
@@ -64,15 +65,18 @@ public class HoldBookUseCaseTest {
 
         // given
         HoldBookUseCase useCase = useCase();
-        String regularPatronId = existingRegularPatron();
-        String isbn = isbnInCatalogWithAvailableCirculatingBookInstances(anyDate());
+        Patron existingRegularPatron = existingRegularPatron();
+        String patronId = existingRegularPatron.getPatronId().getId();
+        LocalDate holdStartDate = anyDate();
+        Isbn isbn = isbnInCatalogWithAvailableCirculatingBookInstances(holdStartDate);
 
         // when
 
-        useCase.holdBook(regularPatronId, isbn, anyDate(), false);
+        useCase.holdBook(patronId, isbn.getNumber(), holdStartDate, false);
 
         // then
 
+        presentErrorOnTryingToPutHoldOnAvailableBookWithIsbn(isbn);
 
         // and
 
@@ -80,20 +84,63 @@ public class HoldBookUseCaseTest {
 
     }
 
-    private String isbnInCatalogWithAvailableCirculatingBookInstances(LocalDate date) {
+    @Test
+    void present_successful_put_on_hold_of_book_for_patron() {
+
+        // given
+
+        HoldBookUseCase useCase = useCase();
+        Patron existingRegularPatron = existingRegularPatron();
+        String patronId = existingRegularPatron.getPatronId().getId();
+        LocalDate holdStartDate = anyDate();
+        Isbn isbn = isbnInCatalogWithoutAnyAvailableCirculatingBookInstances(holdStartDate);
+        maximumOverdueCheckOutsSetTo(2);
+        durationForClosedEndedHoldSetToDays(30);
+
+        // when
+
+    }
+
+    private void durationForClosedEndedHoldSetToDays(int days) {
+        when(configOps.closedEndedHoldDuration())
+                .thenReturn(Days.of(days));
+    }
+
+    private void maximumOverdueCheckOutsSetTo(int maxNumber) {
+        when(configOps.maxNumberOverdueCheckoutsForHold())
+                .thenReturn(maxNumber);
+    }
+
+    private void presentErrorOnTryingToPutHoldOnAvailableBookWithIsbn(Isbn isbn) {
+        ArgumentCaptor<Isbn> isbnArg = ArgumentCaptor.forClass(Isbn.class);
+        verify(presenter, times(1))
+                .presentErrorOnTryingToPutHoldOnAvailableBook(isbnArg.capture());
+        Assertions.assertThat(isbnArg.getValue()).isEqualTo(isbn);
+    }
+
+    private Isbn isbnInCatalogWithAvailableCirculatingBookInstances(LocalDate date) {
         Book book = anyBook();
         Isbn isbn = book.getIsbn();
         when(gatewayOps.existsInCatalog(isbn)).thenReturn(true);
         when(gatewayOps.findAvailableBooks(isbn, BookType.CIRCULATING, date))
                 .thenReturn(Set.of(book));
-        return isbn.getNumber();
+        return isbn;
     }
 
-    private String existingRegularPatron() {
+    private Isbn isbnInCatalogWithoutAnyAvailableCirculatingBookInstances(LocalDate date) {
+        Book book = anyBook();
+        Isbn isbn = book.getIsbn();
+        when(gatewayOps.existsInCatalog(isbn)).thenReturn(true);
+        when(gatewayOps.findAvailableBooks(isbn, BookType.CIRCULATING, date))
+                .thenReturn(Set.of());
+        return isbn;
+    }
+
+    private Patron existingRegularPatron() {
         Patron patron = anyRegularPatron();
         when(gatewayOps.loadPatron(patron.getPatronId()))
                 .thenReturn(patron);
-        return patron.getPatronId().getId();
+        return patron;
     }
 
     private void useCaseDidNotSucceed() {
