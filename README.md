@@ -58,5 +58,6 @@ Here is the link to [the original licence](https://github.com/ddd-by-examples/li
 
 ## References
 
-1. [Clean DDD](https://medium.com/unil-ci-software-engineering/clean-domain-driven-design-2236f5430a05)
-2. [Cargo Clean](https://medium.com/unil-ci-software-engineering/revisiting-cargo-tracking-application-using-clean-ddd-4ed16c0e6ae1)
+1. [GitHub, ddd-by-examples/library](https://github.com/ddd-by-examples/library)
+2. [Clean DDD](https://medium.com/unil-ci-software-engineering/clean-domain-driven-design-2236f5430a05)
+3. [Cargo Clean](https://medium.com/unil-ci-software-engineering/revisiting-cargo-tracking-application-using-clean-ddd-4ed16c0e6ae1)
