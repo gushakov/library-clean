@@ -41,6 +41,7 @@ Here is the description for the Library domain, reprinted here from
 We are introducing some changes to the domain:
 
 - There is only one library branch.
+- We only deal with active (open) holds and checkouts.
 - Patron places a hold on a book by specifying the ISBN of the corresponding catalog entry. Once there is any
   _book instance_ available for checkout, it will automatically be registered as a checkout for the patron. If the only
   books for a given catalog entry are restricted, this catalog entry can only be placed on hold by a researcher patron.

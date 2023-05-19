@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 
-import static com.github.libraryclean.core.model.LibraryDsl.*;
+import static com.github.libraryclean.core.model.SampleDates.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchException;
 

@@ -1,3 +1,16 @@
+/*
+    COPYRIGHT DISCLAIMER
+    --------------------
+
+    The code in this file may be based on the original work from
+    [ddd-by-examples/library](https://github.com/ddd-by-examples/library).
+
+    Please see the original licence at
+    https://github.com/ddd-by-examples/library/blob/master/LICENSE
+
+    and the copyright disclaimer notice in "README.md" (in this repository).
+ */
+
 package com.github.libraryclean.usecase.hold;
 
 import com.github.libraryclean.core.model.book.Book;
@@ -11,7 +24,6 @@ import com.github.libraryclean.core.ports.config.ConfigurationOutputPort;
 import com.github.libraryclean.core.ports.db.PersistenceGatewayOutputPort;
 import com.github.libraryclean.core.usecase.hold.HoldBookPresenterOutputPort;
 import com.github.libraryclean.core.usecase.hold.HoldBookUseCase;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -21,11 +33,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDate;
 import java.util.Set;
 
-import static com.github.libraryclean.core.model.LibraryDsl.anyDate;
-import static com.github.libraryclean.core.model.book.BookDsl.anyBook;
-import static com.github.libraryclean.core.model.catalog.CatalogDsl.anyIsbn;
-import static com.github.libraryclean.core.model.patron.PatronDsl.anyPatronId;
-import static com.github.libraryclean.core.model.patron.PatronDsl.anyRegularPatron;
+import static com.github.libraryclean.core.model.SampleDates.anyDate;
+import static com.github.libraryclean.core.model.book.SampleBooks.anyBook;
+import static com.github.libraryclean.core.model.catalog.SampleCatalog.anyIsbn;
+import static com.github.libraryclean.core.model.patron.SamplePatrons.anyPatronId;
+import static com.github.libraryclean.core.model.patron.SamplePatrons.anyRegularPatron;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.groups.Tuple.tuple;
 import static org.mockito.Mockito.*;
 
@@ -108,12 +121,14 @@ public class HoldBookUseCaseTest {
 
         // and
 
-        noErrorsWerePresented();
+        patronWasSaved(patron.getPatronId());
 
     }
 
-    private void noErrorsWerePresented() {
-        verify(presenter, times(0)).presentError(any(Throwable.class));
+    private void patronWasSaved(PatronId patronId) {
+        ArgumentCaptor<Patron> patronArg = ArgumentCaptor.forClass(Patron.class);
+        verify(gatewayOps, times(1)).savePatron(patronArg.capture());
+        assertThat(patronArg.getValue().getPatronId()).isEqualTo(patronId);
     }
 
     private void patronHasNewHoldWithIsbnAndDuration(Isbn isbn, Days holdDuration) {
@@ -121,7 +136,7 @@ public class HoldBookUseCaseTest {
         verify(presenter, times(1))
                 .presentSuccessfulPutOnHoldOfBookForPatron(patronArg.capture());
         Patron patronWithHold = patronArg.getValue();
-        Assertions.assertThat(patronWithHold.getHolds())
+        assertThat(patronWithHold.getHolds())
                 .hasSize(1)
                 .extracting(Hold::getIsbn, Hold::getDuration)
                 .containsExactly(tuple(isbn, holdDuration));
@@ -143,7 +158,7 @@ public class HoldBookUseCaseTest {
         ArgumentCaptor<Isbn> isbnArg = ArgumentCaptor.forClass(Isbn.class);
         verify(presenter, times(1))
                 .presentErrorOnTryingToPutHoldOnAvailableBook(isbnArg.capture());
-        Assertions.assertThat(isbnArg.getValue()).isEqualTo(isbn);
+        assertThat(isbnArg.getValue()).isEqualTo(isbn);
     }
 
     private Isbn isbnInCatalogWithAvailableCirculatingBookInstances(LocalDate date) {
@@ -180,7 +195,7 @@ public class HoldBookUseCaseTest {
         ArgumentCaptor<Isbn> isbnArg = ArgumentCaptor.forClass(Isbn.class);
         verify(presenter, times(1))
                 .presentErrorOnAbsentCatalogEntry(isbnArg.capture());
-        Assertions.assertThat(isbnArg.getValue()).isEqualTo(isbn);
+        assertThat(isbnArg.getValue()).isEqualTo(isbn);
     }
 
     private HoldBookUseCase useCase() {

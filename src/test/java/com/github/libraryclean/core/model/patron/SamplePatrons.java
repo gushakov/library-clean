@@ -1,16 +1,27 @@
+/*
+    COPYRIGHT DISCLAIMER
+    --------------------
+
+    The code in this file may be based on the original work from
+    [ddd-by-examples/library](https://github.com/ddd-by-examples/library).
+
+    Please see the original licence at
+    https://github.com/ddd-by-examples/library/blob/master/LICENSE
+
+    and the copyright disclaimer notice in "README.md" (in this repository).
+ */
+
 package com.github.libraryclean.core.model.patron;
 
 import com.github.libraryclean.core.model.Ids;
 import com.github.libraryclean.core.model.book.Book;
-import com.github.libraryclean.core.model.book.BookDsl;
-import com.github.libraryclean.core.model.catalog.CatalogDsl;
 
 import java.time.LocalDate;
 
-import static com.github.libraryclean.core.model.book.BookDsl.*;
-import static com.github.libraryclean.core.model.catalog.CatalogDsl.anyIsbn;
+import static com.github.libraryclean.core.model.book.SampleBooks.anyBook;
+import static com.github.libraryclean.core.model.catalog.SampleCatalog.anyIsbn;
 
-public class PatronDsl {
+public class SamplePatrons {
 
     public static Days holdDurationNotSpecified() {
         return null;
@@ -53,7 +64,7 @@ public class PatronDsl {
         return anyPatron().withAdditionalHold(hold);
     }
 
-    public static Patron aPatronWithCheckOut(CheckOut checkOut){
+    public static Patron aPatronWithCheckOut(CheckOut checkOut) {
         return anyPatron().withAdditionalCheckOut(checkOut);
     }
 
