@@ -1,9 +1,13 @@
 package com.github.libraryclean.core.model.patron;
 
 import com.github.libraryclean.core.model.Ids;
+import com.github.libraryclean.core.model.book.Book;
+import com.github.libraryclean.core.model.book.BookDsl;
+import com.github.libraryclean.core.model.catalog.CatalogDsl;
 
 import java.time.LocalDate;
 
+import static com.github.libraryclean.core.model.book.BookDsl.*;
 import static com.github.libraryclean.core.model.catalog.CatalogDsl.anyIsbn;
 
 public class PatronDsl {
@@ -24,6 +28,11 @@ public class PatronDsl {
         return Hold.of(anyIsbn(), holdStartDate);
     }
 
+    public static CheckOut anyCheckOut(LocalDate checkOutStartDate, Days checkOutDuration) {
+        Book book = anyBook();
+        return CheckOut.of(book.getBookId(), book.getIsbn(), checkOutStartDate, checkOutDuration);
+    }
+
     public static PatronId anyPatronId() {
         return PatronId.of(Ids.next());
     }
@@ -40,8 +49,12 @@ public class PatronDsl {
         return anyRegularPatron();
     }
 
-    public static Patron anyPatronWithActiveHold(Hold hold) {
+    public static Patron aPatronWithHold(Hold hold) {
         return anyPatron().withAdditionalHold(hold);
+    }
+
+    public static Patron aPatronWithCheckOut(CheckOut checkOut){
+        return anyPatron().withAdditionalCheckOut(checkOut);
     }
 
 }

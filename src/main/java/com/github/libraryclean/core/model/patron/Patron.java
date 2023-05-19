@@ -111,16 +111,16 @@ public class Patron {
         Hold hold = Hold.of(isbn, holdStartDate, holdDuration);
 
         // check if patron has a hold on a book with the same ISBN
-        if (findHold(isbn).isPresent()) {
-            throw new DuplicateHoldError(hold, "Illegal hold error: patron already has an active hold for " +
-                    "catalog entry with the same ISBN");
-        }
+        findHold(isbn).ifPresent(existingHold -> {
+            throw new DuplicateHoldError(existingHold, "Illegal hold error: patron already has an active hold " +
+                    "for catalog entry with the same ISBN");
+        });
 
         // check if patron has a checkout on a book with the same ISBN
-        if (findCheckOut(isbn).isPresent()) {
-            throw new HoldingCheckedOutBookError(hold, "Illegal hold error: patron already has an active checkout with " +
-                    "a book with the same ISBN");
-        }
+        findCheckOut(isbn).ifPresent(existingCheckOut -> {
+            throw new HoldingCheckedOutBookError(hold, existingCheckOut, "Illegal hold error: patron already " +
+                    "has an active checkout of a book with the same ISBN");
+        });
 
         // regular patron cannot issue open-ended holds
         if (level == PatronLevel.REGULAR && hold.type() == HoldType.OPEN_ENDED) {
@@ -183,7 +183,7 @@ public class Patron {
                 .checkOuts(checkOuts);
     }
 
-    // this method is package-private so that we can use it from tests
+    // these methods are package-private so that we can use it from tests
 
     Patron withAdditionalHold(Hold hold) {
         return newPatron()
@@ -191,8 +191,14 @@ public class Patron {
                 .build();
     }
 
-    private Set<Hold> addOne(Set<Hold> holds, Hold additionalHold) {
-        return Stream.concat(holds.stream(), Stream.of(additionalHold))
+    Patron withAdditionalCheckOut(CheckOut checkOut) {
+        return newPatron()
+                .checkOuts(addOne(this.checkOuts, checkOut))
+                .build();
+    }
+
+    private <T> Set<T> addOne(Set<T> items, T additionalItem) {
+        return Stream.concat(items.stream(), Stream.of(additionalItem))
                 .collect(Collectors.toUnmodifiableSet());
     }
 }

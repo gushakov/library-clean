@@ -17,7 +17,7 @@ public class PatronTest {
         // given
 
         Hold hold = anyHold(anyDate());
-        Patron patron = anyPatronWithActiveHold(hold);
+        Patron patron = aPatronWithHold(hold);
 
         // when
 
@@ -32,6 +32,24 @@ public class PatronTest {
         // and
 
         assertThat(patron.getHolds()).hasSize(1);
+
+    }
+
+    @Test
+    void patron_must_not_hold_checked_out_book() {
+
+        // given
+
+        CheckOut checkOut = anyCheckOut(anyDate(), Days.of(30));
+        Patron patron = aPatronWithCheckOut(checkOut);
+
+        // when
+
+        Exception error = catchException(() -> patron.holdBook(checkOut.getIsbn(), anyDate(), null, 2));
+
+        // then
+
+        assertThat(error).isInstanceOf(HoldingCheckedOutBookError.class);
 
     }
 

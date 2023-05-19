@@ -129,6 +129,9 @@ public class HoldBookUseCase implements HoldBookInputPort {
             } catch (DuplicateHoldError e) {
                 presenter.presentErrorOnDuplicateHold(isbn, patron, e.getHold());
                 return;
+            } catch (HoldingCheckedOutBookError e) {
+                presenter.presentErrorOnHoldingCheckedOutBook(isbn, patron, e.getHold(), e.getCheckOut());
+                return;
             } catch (InsufficientPatronLevelForHoldTypeError e) {
                 presenter.presentErrorOnInsufficientPatronLevelForHoldType(isbn, patron, e.getHold());
                 return;

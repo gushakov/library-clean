@@ -1,12 +1,13 @@
 package com.github.libraryclean.core.model.patron;
 
+import com.github.libraryclean.core.model.book.Book;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
 import static com.github.libraryclean.core.model.LibraryDsl.*;
-import static com.github.libraryclean.core.model.book.BookDsl.anyBookId;
+import static com.github.libraryclean.core.model.book.BookDsl.anyBook;
 import static org.assertj.core.api.Assertions.*;
 
 public class CheckOutTest {
@@ -18,7 +19,8 @@ public class CheckOutTest {
 
         LocalDate startDate = anyDate();
         LocalDate invalidReturnDate = dayBefore(startDate);
-        CheckOut checkOut = CheckOut.of(anyBookId(), startDate, Days.of(1));
+        Book book = anyBook();
+        CheckOut checkOut = CheckOut.of(book.getBookId(), book.getIsbn(), startDate, Days.of(1));
 
         // when
 
@@ -36,7 +38,8 @@ public class CheckOutTest {
 
         LocalDate startDate = anyDate();
         LocalDate returnDate = dayLater(startDate);
-        CheckOut checkOut = CheckOut.of(anyBookId(), startDate, Days.of(10));
+        Book book = anyBook();
+        CheckOut checkOut = CheckOut.of(book.getBookId(), book.getIsbn(), startDate, Days.of(10));
 
         // when
 
@@ -60,7 +63,8 @@ public class CheckOutTest {
         LocalDate startDate = anyDate();
         Days duration = Days.of(10);
         LocalDate atDate = startDate.plusDays(20);
-        CheckOut checkOut = CheckOut.of(anyBookId(), startDate, duration);
+        Book book = anyBook();
+        CheckOut checkOut = CheckOut.of(book.getBookId(), book.getIsbn(), startDate, duration);
 
         // when
         boolean overdue = checkOut.isOverdue(atDate);

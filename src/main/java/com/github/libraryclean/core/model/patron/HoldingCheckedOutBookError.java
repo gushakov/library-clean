@@ -8,8 +8,12 @@ public class HoldingCheckedOutBookError extends GenericLibraryError {
     @Getter
     private final Hold hold;
 
-    public HoldingCheckedOutBookError(Hold hold, String message) {
+    @Getter
+    private final CheckOut checkOut;
+
+    public HoldingCheckedOutBookError(Hold hold, CheckOut checkOut, String message) {
         super(message);
         this.hold = hold;
+        this.checkOut = checkOut;
     }
 }

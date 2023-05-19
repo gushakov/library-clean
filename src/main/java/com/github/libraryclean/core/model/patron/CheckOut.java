@@ -36,7 +36,7 @@ public class CheckOut {
     BookId bookId;
 
     /**
-     * ISBN of the catalog entry.
+     * ISBN of the catalog entry of the checked out book.
      */
     Isbn isbn;
 
