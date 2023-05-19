@@ -63,4 +63,9 @@ public class PatronTest {
 
         assertThat(regularPatron.getHolds()).isEmpty();
     }
+
+    @Test
+    void patron_must_not_place_hold_if_too_many_overdue_checkouts() {
+
+    }
 }

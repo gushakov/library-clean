@@ -11,7 +11,10 @@ public class CatalogDsl {
                 CatalogEntry.of(Isbn.of("0134494164"), "Clean Architecture", "Robert Martin"),
 
                 "0321125215",
-                CatalogEntry.of(Isbn.of("0321125215"), "Domain-Driven Design", "Eric Evans")
+                CatalogEntry.of(Isbn.of("0321125215"), "Domain-Driven Design", "Eric Evans"),
+
+                "0134757599",
+                CatalogEntry.of(Isbn.of("0134757599"), "Refactoring", "Martin Fowler")
         );
     }
 

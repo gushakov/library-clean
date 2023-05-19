@@ -4,7 +4,9 @@ import com.github.libraryclean.core.model.book.Book;
 import com.github.libraryclean.core.model.book.BookType;
 import com.github.libraryclean.core.model.catalog.Isbn;
 import com.github.libraryclean.core.model.patron.Days;
+import com.github.libraryclean.core.model.patron.Hold;
 import com.github.libraryclean.core.model.patron.Patron;
+import com.github.libraryclean.core.model.patron.PatronId;
 import com.github.libraryclean.core.ports.config.ConfigurationOutputPort;
 import com.github.libraryclean.core.ports.db.PersistenceGatewayOutputPort;
 import com.github.libraryclean.core.usecase.hold.HoldBookPresenterOutputPort;
@@ -24,6 +26,7 @@ import static com.github.libraryclean.core.model.book.BookDsl.anyBook;
 import static com.github.libraryclean.core.model.catalog.CatalogDsl.anyIsbn;
 import static com.github.libraryclean.core.model.patron.PatronDsl.anyPatronId;
 import static com.github.libraryclean.core.model.patron.PatronDsl.anyRegularPatron;
+import static org.assertj.core.groups.Tuple.tuple;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -44,12 +47,12 @@ public class HoldBookUseCaseTest {
         // given
 
         HoldBookUseCase useCase = useCase();
-        String patronId = anyPatronId().toString();
-        String isbnNotInCatalog = anIsbnNotInCatalog();
+        PatronId patronId = anyPatronId();
+        Isbn isbnNotInCatalog = anIsbnNotInCatalog();
 
         // when
 
-        useCase.holdBook(patronId, isbnNotInCatalog, anyDate(), false);
+        useCase.holdBook(patronId.getId(), isbnNotInCatalog.getNumber(), anyDate(), false);
 
         // then
 
@@ -65,14 +68,13 @@ public class HoldBookUseCaseTest {
 
         // given
         HoldBookUseCase useCase = useCase();
-        Patron existingRegularPatron = existingRegularPatron();
-        String patronId = existingRegularPatron.getPatronId().getId();
+        Patron patron = existingRegularPatron();
         LocalDate holdStartDate = anyDate();
         Isbn isbn = isbnInCatalogWithAvailableCirculatingBookInstances(holdStartDate);
 
         // when
 
-        useCase.holdBook(patronId, isbn.getNumber(), holdStartDate, false);
+        useCase.holdBook(patron.getPatronId().getId(), isbn.getNumber(), holdStartDate, false);
 
         // then
 
@@ -90,20 +92,46 @@ public class HoldBookUseCaseTest {
         // given
 
         HoldBookUseCase useCase = useCase();
-        Patron existingRegularPatron = existingRegularPatron();
-        String patronId = existingRegularPatron.getPatronId().getId();
+        Patron patron = existingRegularPatron();
         LocalDate holdStartDate = anyDate();
         Isbn isbn = isbnInCatalogWithoutAnyAvailableCirculatingBookInstances(holdStartDate);
         maximumOverdueCheckOutsSetTo(2);
-        durationForClosedEndedHoldSetToDays(30);
+        Days holdDuration = durationForClosedEndedHoldSetToDays(30);
 
         // when
 
+        useCase.holdBook(patron.getPatronId().getId(), isbn.getNumber(), holdStartDate, false);
+
+        // then
+
+        patronHasNewHoldWithIsbnAndDuration(isbn, holdDuration);
+
+        // and
+
+        noErrorsWerePresented();
+
     }
 
-    private void durationForClosedEndedHoldSetToDays(int days) {
+    private void noErrorsWerePresented() {
+        verify(presenter, times(0)).presentError(any(Throwable.class));
+    }
+
+    private void patronHasNewHoldWithIsbnAndDuration(Isbn isbn, Days holdDuration) {
+        ArgumentCaptor<Patron> patronArg = ArgumentCaptor.forClass(Patron.class);
+        verify(presenter, times(1))
+                .presentSuccessfulPutOnHoldOfBookForPatron(patronArg.capture());
+        Patron patronWithHold = patronArg.getValue();
+        Assertions.assertThat(patronWithHold.getHolds())
+                .hasSize(1)
+                .extracting(Hold::getIsbn, Hold::getDuration)
+                .containsExactly(tuple(isbn, holdDuration));
+    }
+
+    private Days durationForClosedEndedHoldSetToDays(int days) {
+        Days duration = Days.of(days);
         when(configOps.closedEndedHoldDuration())
-                .thenReturn(Days.of(days));
+                .thenReturn(duration);
+        return duration;
     }
 
     private void maximumOverdueCheckOutsSetTo(int maxNumber) {
@@ -148,20 +176,20 @@ public class HoldBookUseCaseTest {
                 .presentSuccessfulPutOnHoldOfBookForPatron(any());
     }
 
-    private void presentErrorOnAbsentCatalogEntryWithIsbn(String isbn) {
+    private void presentErrorOnAbsentCatalogEntryWithIsbn(Isbn isbn) {
         ArgumentCaptor<Isbn> isbnArg = ArgumentCaptor.forClass(Isbn.class);
         verify(presenter, times(1))
                 .presentErrorOnAbsentCatalogEntry(isbnArg.capture());
-        Assertions.assertThat(isbnArg.getValue().getNumber()).isEqualTo(isbn);
+        Assertions.assertThat(isbnArg.getValue()).isEqualTo(isbn);
     }
 
     private HoldBookUseCase useCase() {
         return new HoldBookUseCase(presenter, gatewayOps, configOps);
     }
 
-    private String anIsbnNotInCatalog() {
+    private Isbn anIsbnNotInCatalog() {
         Isbn isbn = anyIsbn();
         when(gatewayOps.existsInCatalog(isbn)).thenReturn(false);
-        return isbn.getNumber();
+        return isbn;
     }
 }

@@ -14,6 +14,7 @@
 package com.github.libraryclean.core.model.patron;
 
 import com.github.libraryclean.core.model.book.BookId;
+import com.github.libraryclean.core.model.catalog.Isbn;
 import lombok.Builder;
 import lombok.Value;
 
@@ -35,6 +36,11 @@ public class CheckOut {
     BookId bookId;
 
     /**
+     * ISBN of the catalog entry.
+     */
+    Isbn isbn;
+
+    /**
      * Date this checkout has started.
      */
     LocalDate startDate;
@@ -49,17 +55,19 @@ public class CheckOut {
      */
     LocalDate actualReturnDate;
 
-    public static CheckOut of(BookId bookId, LocalDate startDate, Days duration) {
+    public static CheckOut of(BookId bookId, Isbn isbn, LocalDate startDate, Days duration) {
         return new CheckOutBuilder()
                 .bookId(bookId)
+                .isbn(isbn)
                 .startDate(startDate)
                 .duration(duration)
                 .build();
     }
 
     @Builder
-    private CheckOut(BookId bookId, LocalDate startDate, Days duration, LocalDate actualReturnDate) {
+    private CheckOut(BookId bookId, Isbn isbn, LocalDate startDate, Days duration, LocalDate actualReturnDate) {
         this.bookId = notNull(bookId);
+        this.isbn = notNull(isbn);
         this.startDate = notNull(startDate);
         this.duration = notNull(duration);
 
@@ -110,6 +118,7 @@ public class CheckOut {
     private CheckOutBuilder newCheckOut() {
         return new CheckOutBuilder()
                 .bookId(bookId)
+                .isbn(isbn)
                 .startDate(startDate)
                 .duration(duration)
                 .actualReturnDate(actualReturnDate);

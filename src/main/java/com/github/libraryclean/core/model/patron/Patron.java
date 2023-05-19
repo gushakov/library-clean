@@ -116,6 +116,12 @@ public class Patron {
                     "catalog entry with the same ISBN");
         }
 
+        // check if patron has a checkout on a book with the same ISBN
+        if (findCheckOut(isbn).isPresent()) {
+            throw new HoldingCheckedOutBookError(hold, "Illegal hold error: patron already has an active checkout with " +
+                    "a book with the same ISBN");
+        }
+
         // regular patron cannot issue open-ended holds
         if (level == PatronLevel.REGULAR && hold.type() == HoldType.OPEN_ENDED) {
             throw new InsufficientPatronLevelForHoldTypeError(hold, "Regular patron cannot issue an open-ended holds");
@@ -136,6 +142,16 @@ public class Patron {
     }
 
     /**
+     * Finds a checkout with matching {@code isbn}.
+     *
+     * @param isbn ISBN of the checked out book
+     * @return optional with matching checkout
+     */
+    public Optional<CheckOut> findCheckOut(Isbn isbn) {
+        return checkOuts.stream().filter(checkOut -> checkOut.getIsbn().equals(isbn)).findAny();
+    }
+
+    /**
      * Returns a set of any overdue checkouts.
      *
      * @return set of any overdue checkouts or an empty set if there are none
@@ -147,11 +163,10 @@ public class Patron {
     }
 
     /**
-     * Returns a copy of a hold among this patron's active holds with the
-     * matching {@code isbn}.
+     * Finds a hold with matching {@code isbn}.
      *
      * @param isbn ISBN of the book on hold
-     * @return optional with a copy of the matching hold or an empty optional
+     * @return optional containing the matching hold
      */
     public Optional<Hold> findHold(Isbn isbn) {
         return holds.stream()
