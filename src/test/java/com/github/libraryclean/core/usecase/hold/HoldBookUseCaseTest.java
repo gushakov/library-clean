@@ -11,7 +11,7 @@
     and the copyright disclaimer notice in "README.md" (in this repository).
  */
 
-package com.github.libraryclean.usecase.hold;
+package com.github.libraryclean.core.usecase.hold;
 
 import com.github.libraryclean.core.model.book.Book;
 import com.github.libraryclean.core.model.book.BookType;
