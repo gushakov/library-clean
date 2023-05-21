@@ -16,7 +16,7 @@
     </parent>
     <groupId>com.github</groupId>
     <artifactId>library-clean</artifactId>
-    <version>0.0.3</version>
+    <version>0.0.4</version>
     <name>library-clean</name>
     <description>
         <![CDATA[
@@ -54,6 +54,28 @@
 
     </dependencies>
 
+    <build>
+        <plugins>
+            <!--
+            Package sources with the distribution.
+            From https://maven.apache.org/plugins/maven-source-plugin/usage.html
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
     <!--
         Needed for publishing with Maven to GitHub packages.
         From https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#publishing-a-package
@@ -63,7 +85,7 @@
         <repository>
             <id>github</id>
             <name>GitHub gushakov Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/gushakov/${artifactId}</url>
+            <url>https://maven.pkg.github.com/gushakov/${project.artifactId}</url>
         </repository>
     </distributionManagement>
 
