@@ -16,7 +16,7 @@
     </parent>
     <groupId>com.github</groupId>
     <artifactId>library-clean</artifactId>
-    <version>0.0.4</version>
+    <version>0.0.1</version>
     <name>library-clean</name>
     <description>
         <![CDATA[
