@@ -1,0 +1,22 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: "jdbc:postgresql://localhost:5432/librarydb"
+    username: postgres
+    password: postgres
+    hikari:
+      connection-timeout: 5000
+  flyway:
+    schemas: public
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration
+
+logging:
+  level:
+    root: info
+    com:
+      github:
+        libraryclean: debug
+    org:
+      springframework:
+        boot: debug
