@@ -15,6 +15,7 @@ package com.github.libraryclean.core.ports.db;
 
 import com.github.libraryclean.core.model.book.Book;
 import com.github.libraryclean.core.model.book.BookType;
+import com.github.libraryclean.core.model.catalog.CatalogEntry;
 import com.github.libraryclean.core.model.catalog.Isbn;
 import com.github.libraryclean.core.model.patron.Patron;
 import com.github.libraryclean.core.model.patron.PatronId;
@@ -31,6 +32,15 @@ public interface PersistenceGatewayOutputPort {
      * @return {@code true} if a catalog entry exists for the given ISBN
      */
     boolean existsInCatalog(Isbn isbn);
+
+    /**
+     * Loads a {@link CatalogEntry} for given {@code isbn}.
+     *
+     * @param isbn ISBN of the catalog entry
+     * @return catalog entry
+     * @throws PersistenceError if no catalog entry with matching ISBN exists
+     */
+    CatalogEntry loadCatalogEntry(Isbn isbn);
 
     /**
      * Returns a set of available books with the corresponding ISBN on a particular

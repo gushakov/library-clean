@@ -1,27 +1,40 @@
 package com.github.libraryclean.infrastructure.adapter.db;
 
+import com.github.libraryclean.core.model.catalog.CatalogEntry;
+import com.github.libraryclean.core.model.catalog.SampleCatalog;
 import com.github.libraryclean.infrastructure.LibraryCleanApplication;
+import com.github.libraryclean.infrastructure.adapter.db.jdbc.PersistenceGateway;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
-
-import java.util.List;
-import java.util.Map;
 
 @SpringBootTest(classes = {LibraryCleanApplication.class}, webEnvironment = SpringBootTest.WebEnvironment.NONE)
 public class PersistenceGatewayTestIT {
 
     @Autowired
-    private NamedParameterJdbcOperations jdbcOperations;
+    private PersistenceGateway persistenceGateway;
 
     @Test
-    void process_flyway_scripts() {
+    void load_sample_catalog_entry() {
 
-        List<Map<String, Object>> maps = jdbcOperations.queryForList("select * from catalog", Map.of());
-        System.out.println(maps.size());
+        // given
 
-        maps.get(0).values().forEach(System.out::println);
+        CatalogEntry sampleEntry = SampleCatalog.catalogEntry("0134494164");
+        // and successfully loaded sample entries with Flyway migration script
 
+        // when
+
+        CatalogEntry loadedEntry = persistenceGateway.loadCatalogEntry(sampleEntry.getIsbn());
+
+        // then
+
+        entriesMatch(loadedEntry, sampleEntry);
+    }
+
+    private void entriesMatch(CatalogEntry catalogEntry, CatalogEntry anotherCatalogEntry) {
+        Assertions.assertThat(catalogEntry)
+                .extracting(CatalogEntry::getIsbn, CatalogEntry::getTitle, CatalogEntry::getAuthor)
+                .containsExactly(anotherCatalogEntry.getIsbn(), anotherCatalogEntry.getTitle(), anotherCatalogEntry.getAuthor());
     }
 }

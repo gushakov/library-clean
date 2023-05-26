@@ -44,6 +44,9 @@ public class CatalogEntry {
 
     String author;
 
+    // needed for Spring Data JDBC
+    Integer version;
+
     public static CatalogEntry of(Isbn isbn, String title, String author) {
         return CatalogEntry.builder()
                 .isbn(isbn)
@@ -58,6 +61,9 @@ public class CatalogEntry {
         this.isbn = notNull(isbn);
         this.title = notBlank(title);
         this.author = notBlank(author);
+
+        // version will null for entries which were not yet persisted
+        this.version = version;
     }
 
 }
