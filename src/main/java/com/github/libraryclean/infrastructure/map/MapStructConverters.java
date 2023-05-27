@@ -4,7 +4,7 @@ import com.github.libraryclean.core.model.catalog.Isbn;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
-public class CommonConverters {
+public class MapStructConverters {
 
     public String convertIsbnToString(Isbn isbn) {
         if (isbn == null) {

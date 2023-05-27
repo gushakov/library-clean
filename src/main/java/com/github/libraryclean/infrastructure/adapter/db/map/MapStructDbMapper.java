@@ -2,11 +2,11 @@ package com.github.libraryclean.infrastructure.adapter.db.map;
 
 import com.github.libraryclean.core.model.catalog.CatalogEntry;
 import com.github.libraryclean.infrastructure.adapter.db.jdbc.catalog.CatalogEntryDbEntity;
-import com.github.libraryclean.infrastructure.map.CommonConverters;
+import com.github.libraryclean.infrastructure.map.MapStructConverters;
 import com.github.libraryclean.infrastructure.map.IgnoreForMapping;
 import org.mapstruct.Mapper;
 
-@Mapper(componentModel = "spring", uses = {CommonConverters.class})
+@Mapper(componentModel = "spring", uses = {MapStructConverters.class})
 public abstract class MapStructDbMapper implements DbMapper {
 
     protected abstract CatalogEntry map(CatalogEntryDbEntity dbEntity);
