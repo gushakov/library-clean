@@ -22,6 +22,7 @@ import com.github.libraryclean.core.model.patron.PatronId;
 import com.github.libraryclean.core.ports.db.PersistenceError;
 import com.github.libraryclean.core.ports.db.PersistenceGatewayOutputPort;
 import com.github.libraryclean.infrastructure.adapter.db.jdbc.catalog.CatalogEntryDbEntityRepository;
+import com.github.libraryclean.infrastructure.adapter.db.jdbc.patron.PatronDbEntityRepository;
 import com.github.libraryclean.infrastructure.adapter.db.map.DbMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -44,6 +45,8 @@ public class PersistenceGateway implements PersistenceGatewayOutputPort {
 
     private final CatalogEntryDbEntityRepository catalogRepo;
 
+    private final PatronDbEntityRepository patronRepo;
+
     @Override
     public boolean existsInCatalog(Isbn isbn) {
         throw new UnsupportedOperationException("Not implemented yet");
@@ -64,7 +67,10 @@ public class PersistenceGateway implements PersistenceGatewayOutputPort {
 
     @Override
     public Patron loadPatron(PatronId patronId) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        return patronRepo.findById(patronId.getId())
+                .map(dbMapper::convert)
+                .orElseThrow(() -> new PersistenceError("Cannot load patron with ID: %s"
+                        .formatted(patronId.getId())));
     }
 
     @Override

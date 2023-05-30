@@ -42,6 +42,13 @@ public class MapStructConverters {
         return patronId.getId();
     }
 
+    public PatronId convertStringToPatronId(String id) {
+        if (id == null) {
+            return null;
+        }
+        return PatronId.of(id);
+    }
+
     public Integer convertDaysToInteger(Days days) {
         if (days == null) {
             return null;

@@ -15,6 +15,7 @@ package com.github.libraryclean.core.model.patron;
 
 import com.github.libraryclean.core.model.Ids;
 import com.github.libraryclean.core.model.book.Book;
+import com.github.libraryclean.core.model.catalog.Isbn;
 
 import java.time.LocalDate;
 
@@ -66,6 +67,12 @@ public class SamplePatrons {
 
     public static Patron aPatronWithCheckOut(CheckOut checkOut) {
         return anyPatron().withAdditionalCheckOut(checkOut);
+    }
+
+    public static Patron patron1FromDb(){
+       return Patron.of(PatronId.of("hLARqY"), "George Clooney", PatronLevel.REGULAR)
+                .withAdditionalHold(Hold.of(Isbn.of("0134494164"),
+                        LocalDate.of(2023, 5, 30)));
     }
 
 }

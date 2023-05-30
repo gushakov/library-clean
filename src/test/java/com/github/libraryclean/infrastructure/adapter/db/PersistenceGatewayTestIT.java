@@ -15,6 +15,8 @@ package com.github.libraryclean.infrastructure.adapter.db;
 
 import com.github.libraryclean.core.model.catalog.CatalogEntry;
 import com.github.libraryclean.core.model.catalog.SampleCatalog;
+import com.github.libraryclean.core.model.patron.Patron;
+import com.github.libraryclean.core.model.patron.SamplePatrons;
 import com.github.libraryclean.infrastructure.LibraryCleanApplication;
 import com.github.libraryclean.infrastructure.adapter.db.jdbc.PersistenceGateway;
 import org.assertj.core.api.Assertions;
@@ -33,7 +35,7 @@ public class PersistenceGatewayTestIT {
 
         // given
 
-        CatalogEntry sampleEntry = SampleCatalog.catalogEntry("0134494164");
+        CatalogEntry sampleEntry = SampleCatalog.catalogEntry1FromDb();
         // and successfully loaded sample entries with Flyway migration script
 
         // when
@@ -42,10 +44,37 @@ public class PersistenceGatewayTestIT {
 
         // then
 
-        entriesMatch(loadedEntry, sampleEntry);
+        catalogEntriesMatch(loadedEntry, sampleEntry);
     }
 
-    private void entriesMatch(CatalogEntry catalogEntry, CatalogEntry anotherCatalogEntry) {
+
+    @Test
+    void load_sample_partner_with_hold() {
+
+        // given
+
+        Patron samplePatron = SamplePatrons.patron1FromDb();
+
+        // when
+
+        Patron loadedPatron = persistenceGateway.loadPatron(samplePatron.getPatronId());
+
+        // then
+
+        patronsMatch(loadedPatron, samplePatron);
+
+    }
+
+    private void patronsMatch(Patron patron, Patron anotherPatron) {
+
+        Assertions.assertThat(patron)
+                .extracting(Patron::getPatronId, Patron::getFullName, Patron::getLevel)
+                .containsExactly(anotherPatron.getPatronId(), anotherPatron.getFullName(),
+                        anotherPatron.getLevel());
+
+    }
+
+    private void catalogEntriesMatch(CatalogEntry catalogEntry, CatalogEntry anotherCatalogEntry) {
         Assertions.assertThat(catalogEntry)
                 .extracting(CatalogEntry::getIsbn, CatalogEntry::getTitle, CatalogEntry::getAuthor)
                 .containsExactly(anotherCatalogEntry.getIsbn(), anotherCatalogEntry.getTitle(), anotherCatalogEntry.getAuthor());

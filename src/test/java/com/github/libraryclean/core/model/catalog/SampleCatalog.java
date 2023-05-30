@@ -36,7 +36,6 @@ public class SampleCatalog {
         return Optional.ofNullable(catalogEntries().get(isbn)).orElseThrow();
     }
 
-
     public static Isbn anyIsbn() {
         return Isbn.of("0134494164");
     }
@@ -45,5 +44,10 @@ public class SampleCatalog {
         return catalogEntries().values().stream().filter(entry -> !entry.getIsbn().equals(isbn)).findAny()
                 .orElseThrow().getIsbn();
     }
+
+    public static CatalogEntry catalogEntry1FromDb() {
+        return catalogEntry("0134494164");
+    }
+
 
 }

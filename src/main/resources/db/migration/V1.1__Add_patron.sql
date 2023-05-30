@@ -3,6 +3,7 @@ CREATE TABLE public.patron
     patron_id varchar NOT NULL,
     full_name varchar NOT NULL,
     "level"   varchar NULL,
+    "version" int NULL,
     CONSTRAINT patron_pk PRIMARY KEY (patron_id)
 );
 
