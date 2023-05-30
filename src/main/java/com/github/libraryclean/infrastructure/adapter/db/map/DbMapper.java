@@ -14,10 +14,14 @@
 package com.github.libraryclean.infrastructure.adapter.db.map;
 
 import com.github.libraryclean.core.model.catalog.CatalogEntry;
+import com.github.libraryclean.core.model.patron.Hold;
 import com.github.libraryclean.infrastructure.adapter.db.jdbc.catalog.CatalogEntryDbEntity;
+import com.github.libraryclean.infrastructure.adapter.db.jdbc.patron.HoldDbEntity;
 
 public interface DbMapper {
 
     CatalogEntry convert(CatalogEntryDbEntity dbEntity);
+
+    Hold convert(HoldDbEntity dbEntity);
 
 }

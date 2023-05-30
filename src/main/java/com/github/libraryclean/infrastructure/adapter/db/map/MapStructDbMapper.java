@@ -14,7 +14,9 @@
 package com.github.libraryclean.infrastructure.adapter.db.map;
 
 import com.github.libraryclean.core.model.catalog.CatalogEntry;
+import com.github.libraryclean.core.model.patron.Hold;
 import com.github.libraryclean.infrastructure.adapter.db.jdbc.catalog.CatalogEntryDbEntity;
+import com.github.libraryclean.infrastructure.adapter.db.jdbc.patron.HoldDbEntity;
 import com.github.libraryclean.infrastructure.map.MapStructConverters;
 import com.github.libraryclean.infrastructure.map.IgnoreForMapping;
 import org.mapstruct.Mapper;
@@ -24,9 +26,17 @@ public abstract class MapStructDbMapper implements DbMapper {
 
     protected abstract CatalogEntry map(CatalogEntryDbEntity dbEntity);
 
+    protected abstract Hold map(HoldDbEntity dbEntity);
+
     @IgnoreForMapping
     @Override
     public CatalogEntry convert(CatalogEntryDbEntity dbEntity) {
+        return map(dbEntity);
+    }
+
+    @IgnoreForMapping
+    @Override
+    public Hold convert(HoldDbEntity dbEntity) {
         return map(dbEntity);
     }
 }

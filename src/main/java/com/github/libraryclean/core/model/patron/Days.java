@@ -14,9 +14,7 @@
 package com.github.libraryclean.core.model.patron;
 
 import com.github.libraryclean.core.model.InvalidDomainObjectError;
-import lombok.AccessLevel;
 import lombok.Builder;
-import lombok.Getter;
 import lombok.Value;
 
 import java.time.LocalDate;
@@ -30,7 +28,6 @@ import static com.github.libraryclean.core.Validator.positive;
 @Value
 public class Days {
 
-    @Getter(AccessLevel.NONE)
     int numberOfDays;
 
     public static Days of(int days) {

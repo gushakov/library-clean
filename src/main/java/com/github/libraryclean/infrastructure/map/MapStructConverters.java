@@ -14,6 +14,8 @@
 package com.github.libraryclean.infrastructure.map;
 
 import com.github.libraryclean.core.model.catalog.Isbn;
+import com.github.libraryclean.core.model.patron.Days;
+import com.github.libraryclean.core.model.patron.PatronId;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
@@ -31,6 +33,27 @@ public class MapStructConverters {
             return null;
         }
         return Isbn.of(number);
+    }
+
+    public String convertPatronIdToString(PatronId patronId) {
+        if (patronId == null) {
+            return null;
+        }
+        return patronId.getId();
+    }
+
+    public Integer convertDaysToInteger(Days days) {
+        if (days == null) {
+            return null;
+        }
+        return days.getNumberOfDays();
+    }
+
+    public Days convertIntegerToDays(Integer numberOfDays) {
+        if (numberOfDays == null) {
+            return null;
+        }
+        return Days.of(numberOfDays);
     }
 
 }
