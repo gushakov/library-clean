@@ -13,6 +13,7 @@
 
 package com.github.libraryclean.core.model.patron;
 
+import com.github.libraryclean.core.model.InvalidDomainObjectError;
 import com.github.libraryclean.core.model.catalog.Isbn;
 import org.junit.jupiter.api.Test;
 
@@ -27,6 +28,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchException;
 
 public class PatronTest {
+
+    @Test
+    void must_not_be_able_to_construct_invalid_patron() {
+
+        // given
+
+        // when
+
+        Exception error = catchException(() -> Patron.builder().build());
+
+        // then
+
+        assertThat(error).isInstanceOf(InvalidDomainObjectError.class);
+
+    }
 
     @Test
     void patron_must_not_have_duplicate_holds() {
