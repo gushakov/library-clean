@@ -14,7 +14,6 @@
 package com.github.libraryclean.infrastructure.adapter.db;
 
 import com.github.libraryclean.core.model.catalog.CatalogEntry;
-import com.github.libraryclean.core.model.catalog.SampleCatalog;
 import com.github.libraryclean.core.model.patron.Patron;
 import com.github.libraryclean.core.model.patron.SamplePatrons;
 import com.github.libraryclean.infrastructure.LibraryCleanApplication;
@@ -24,6 +23,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.time.LocalDate;
+
+import static com.github.libraryclean.core.model.catalog.SampleCatalog.catalogEntry;
+
+/*
+    This is an integration test which requires a running instance
+    of a database. See also "V2.0__Add_sample_data.sql" Flyway migration
+    script.
+ */
 @SpringBootTest(classes = {LibraryCleanApplication.class}, webEnvironment = SpringBootTest.WebEnvironment.NONE)
 public class PersistenceGatewayTestIT {
 
@@ -35,8 +43,9 @@ public class PersistenceGatewayTestIT {
 
         // given
 
-        CatalogEntry sampleEntry = SampleCatalog.catalogEntry1FromDb();
-        // and successfully loaded sample entries with Flyway migration script
+        // a catalog entry matching the one in the database
+
+        CatalogEntry sampleEntry = catalogEntry("0134494164");
 
         // when
 
@@ -53,7 +62,10 @@ public class PersistenceGatewayTestIT {
 
         // given
 
-        Patron samplePatron = SamplePatrons.patron1FromDb();
+        // a patron matching the patron from DB
+
+        Patron samplePatron = SamplePatrons.patronWithHoldStartingAt("hLARqY",
+                "0134494164", LocalDate.of(2023, 5, 30));
 
         // when
 

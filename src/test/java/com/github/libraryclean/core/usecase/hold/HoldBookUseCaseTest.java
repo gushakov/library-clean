@@ -22,8 +22,6 @@ import com.github.libraryclean.core.model.patron.Patron;
 import com.github.libraryclean.core.model.patron.PatronId;
 import com.github.libraryclean.core.ports.config.ConfigurationOutputPort;
 import com.github.libraryclean.core.ports.db.PersistenceGatewayOutputPort;
-import com.github.libraryclean.core.usecase.hold.HoldBookPresenterOutputPort;
-import com.github.libraryclean.core.usecase.hold.HoldBookUseCase;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -108,7 +106,6 @@ public class HoldBookUseCaseTest {
         Patron patron = existingRegularPatron();
         LocalDate holdStartDate = anyDate();
         Isbn isbn = isbnInCatalogWithoutAnyAvailableCirculatingBookInstances(holdStartDate);
-        maximumOverdueCheckOutsSetTo(2);
         Days holdDuration = durationForClosedEndedHoldSetToDays(30);
 
         // when
@@ -147,11 +144,6 @@ public class HoldBookUseCaseTest {
         when(configOps.closedEndedHoldDuration())
                 .thenReturn(duration);
         return duration;
-    }
-
-    private void maximumOverdueCheckOutsSetTo(int maxNumber) {
-        when(configOps.maxNumberOverdueCheckoutsForHold())
-                .thenReturn(maxNumber);
     }
 
     private void presentErrorOnTryingToPutHoldOnAvailableBookWithIsbn(Isbn isbn) {

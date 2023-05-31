@@ -14,6 +14,7 @@
 package com.github.libraryclean.core.model.patron;
 
 import com.github.libraryclean.core.model.InvalidDomainObjectError;
+import com.github.libraryclean.core.model.book.Book;
 import com.github.libraryclean.core.model.catalog.Isbn;
 import org.junit.jupiter.api.Test;
 
@@ -21,8 +22,8 @@ import java.time.LocalDate;
 
 import static com.github.libraryclean.core.model.SampleDates.anyDate;
 import static com.github.libraryclean.core.model.SampleDates.daysBefore;
+import static com.github.libraryclean.core.model.book.SampleBooks.book;
 import static com.github.libraryclean.core.model.catalog.SampleCatalog.anyIsbn;
-import static com.github.libraryclean.core.model.catalog.SampleCatalog.anyOtherIsbn;
 import static com.github.libraryclean.core.model.patron.SamplePatrons.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchException;
@@ -55,7 +56,7 @@ public class PatronTest {
         // when
 
         Exception error = catchException(() -> patron.holdBook(hold.getIsbn(), hold.getStartDate(),
-                hold.getDuration(), anyNumberOfMaxOverdueCheckouts()));
+                hold.getDuration()));
 
         // then
 
@@ -74,11 +75,11 @@ public class PatronTest {
         // given
 
         CheckOut checkOut = anyCheckOut(anyDate(), Days.of(30));
-        Patron patron = aPatronWithCheckOut(checkOut);
+        Patron patron = aPatronWithCheckOuts(checkOut);
 
         // when
 
-        Exception error = catchException(() -> patron.holdBook(checkOut.getIsbn(), anyDate(), null, 2));
+        Exception error = catchException(() -> patron.holdBook(checkOut.getIsbn(), anyDate(), null));
 
         // then
 
@@ -96,9 +97,10 @@ public class PatronTest {
 
         // when
 
+        // placing a hold on a book with unspecified hold diration
+
         Exception error = catchException(() ->
-                regularPatron.holdBook(isbn, anyDate(),
-                        holdDurationNotSpecified(), anyNumberOfMaxOverdueCheckouts()));
+                regularPatron.holdBook(isbn, anyDate(), null));
 
         // then
 
@@ -121,15 +123,20 @@ public class PatronTest {
         // given
 
         LocalDate checkoutStartDate = daysBefore(anyDate(), 40);
-        CheckOut overdueCheckOut = anyCheckOut(checkoutStartDate, Days.of(30));
-        Patron patron = aPatronWithCheckOut(overdueCheckOut);
-        Isbn holdIsbn = anyOtherIsbn(overdueCheckOut.getIsbn());
-        Days holdDuration = Days.of(10);
-        int maxNumOverdueCheckouts = 0;
+        Book checkedOutBook1 = book("ejVnPM");
+        Book checkedOutBook2 = book("J88Psg");
+        Book checkedOutBook3 = book("9Vf5QN");
+
+        CheckOut overdueCheckOut1 = anyCheckOut(checkedOutBook1, checkoutStartDate, Days.of(30));
+        CheckOut overdueCheckOut2 = anyCheckOut(checkedOutBook2, checkoutStartDate, Days.of(30));
+        CheckOut overdueCheckOut3 = anyCheckOut(checkedOutBook3, checkoutStartDate, Days.of(30));
+        Patron patron = aPatronWithCheckOuts(overdueCheckOut1, overdueCheckOut2, overdueCheckOut3);
 
         // when
 
-        Exception error = catchException(() -> patron.holdBook(holdIsbn, anyDate(), holdDuration, maxNumOverdueCheckouts));
+        // trying to hold a book with ISBN other than ISBNs of the checked out books
+
+        Exception error = catchException(() -> patron.holdBook(Isbn.of("173210221X"), anyDate(), Days.of(20)));
 
         // then
 
@@ -147,11 +154,10 @@ public class PatronTest {
         Isbn isbn = anyIsbn();
         LocalDate holdStartDate = anyDate();
         Days holdDuration = Days.of(30);
-        int maxNumOverdueCheckouts = 2;
 
         // when
 
-        Patron patronWithHold = patron.holdBook(isbn, holdStartDate, holdDuration, maxNumOverdueCheckouts);
+        Patron patronWithHold = patron.holdBook(isbn, holdStartDate, holdDuration);
 
         // then
 

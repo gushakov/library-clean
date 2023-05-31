@@ -40,6 +40,23 @@ import static com.github.libraryclean.core.Validator.*;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Patron {
 
+    /*
+        Point of interest
+        -----------------
+
+        Modeling number of overdue checkouts as a constant.
+        It is a deeply embedded domain constraint which would
+        not be easy to change without processing all existing
+        "Patron" aggregates and verifying that they are still
+        valid (no more than 2 overdue checkouts before a hold
+        can be placed).
+        Note that the first version of this implementation
+        took this number as a parameter to "holdBook()"
+        method. It was supplied by the "HoldBook" use case.
+     */
+
+    public static final int MAX_NUMBER_OF_OVERDUE_CHECKOUTS = 2;
+
     /**
      * ID of the patron.
      */
@@ -91,15 +108,13 @@ public class Patron {
     /**
      * Puts a hold on any books with corresponding ISBN.
      *
-     * @param isbn                   ISBN of the corresponding catalog entry
-     * @param holdStartDate          date on which a hold starts
-     * @param holdDuration           number of days for a hold (closed-ended), {@code null}
-     *                               for an open-ended hold
-     * @param maxNumOverdueCheckOuts maximum number of overdue checkouts allowed for a hold
-     *                               to be registered successfully
+     * @param isbn          ISBN of the corresponding catalog entry
+     * @param holdStartDate date on which a hold starts
+     * @param holdDuration  number of days for a hold (closed-ended), {@code null}
+     *                      for an open-ended hold
      * @return new {@code Patron} with an additional hold registered
      */
-    public Patron holdBook(Isbn isbn, LocalDate holdStartDate, Days holdDuration, int maxNumOverdueCheckOuts) {
+    public Patron holdBook(Isbn isbn, LocalDate holdStartDate, Days holdDuration) {
 
         /*
             Point of interest
@@ -131,7 +146,7 @@ public class Patron {
         }
 
         // cannot exceed the maximum number of overdue checkouts for a successful hold
-        if (overdueCheckOuts(holdStartDate).size() > maxNumOverdueCheckOuts) {
+        if (overdueCheckOuts(holdStartDate).size() > MAX_NUMBER_OF_OVERDUE_CHECKOUTS) {
             throw new TooManyOverdueCheckoutsError(hold, "Cannot issue any holds after the maximum number of " +
                     "overdue checkouts has been reached");
         }

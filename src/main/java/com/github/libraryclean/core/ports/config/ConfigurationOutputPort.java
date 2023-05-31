@@ -21,7 +21,4 @@ public interface ConfigurationOutputPort {
         return Days.of(30);
     }
 
-    default int maxNumberOverdueCheckoutsForHold() {
-        return 2;
-    }
 }

@@ -111,7 +111,6 @@ public class HoldBookUseCase implements HoldBookInputPort {
             if (!openEndedHold) {
                 holdDuration = configOps.closedEndedHoldDuration();
             }
-            int maxNumOverdueCheckOuts = configOps.maxNumberOverdueCheckoutsForHold();
 
             try {
 
@@ -138,7 +137,7 @@ public class HoldBookUseCase implements HoldBookInputPort {
                     it with all the necessary parameters.
                  */
 
-                patronWithAdditionalHold = patron.holdBook(isbn, holdStartDate, holdDuration, maxNumOverdueCheckOuts);
+                patronWithAdditionalHold = patron.holdBook(isbn, holdStartDate, holdDuration);
             } catch (DuplicateHoldError e) {
                 presenter.presentErrorOnDuplicateHold(isbn, patron, e.getHold());
                 return;

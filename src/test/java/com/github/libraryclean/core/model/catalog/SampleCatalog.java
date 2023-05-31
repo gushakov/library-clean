@@ -27,7 +27,10 @@ public class SampleCatalog {
                 CatalogEntry.of(Isbn.of("0321125215"), "Domain-Driven Design", "Eric Evans"),
 
                 "0134757599",
-                CatalogEntry.of(Isbn.of("0134757599"), "Refactoring", "Martin Fowler")
+                CatalogEntry.of(Isbn.of("0134757599"), "Refactoring", "Martin Fowler"),
+
+                "173210221X",
+                CatalogEntry.of(Isbn.of("173210221X"), "A Philosophy of Software Design", "John Ousterhout")
         );
     }
 
@@ -37,17 +40,7 @@ public class SampleCatalog {
     }
 
     public static Isbn anyIsbn() {
-        return Isbn.of("0134494164");
+        return Isbn.of(catalogEntries().keySet().stream().findAny().orElseThrow());
     }
-
-    public static Isbn anyOtherIsbn(Isbn isbn) {
-        return catalogEntries().values().stream().filter(entry -> !entry.getIsbn().equals(isbn)).findAny()
-                .orElseThrow().getIsbn();
-    }
-
-    public static CatalogEntry catalogEntry1FromDb() {
-        return catalogEntry("0134494164");
-    }
-
 
 }

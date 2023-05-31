@@ -13,7 +13,6 @@
 
 package com.github.libraryclean.core.model.book;
 
-import com.github.libraryclean.core.model.Ids;
 import com.github.libraryclean.core.model.catalog.Isbn;
 
 import java.util.Map;
@@ -30,7 +29,9 @@ public class SampleBooks {
                 "J88Psg",
                 Book.of(BookId.of("J88Psg"), Isbn.of("0321125215"), BookType.CIRCULATING),
                 "9Vf5QN",
-                Book.of(BookId.of("9Vf5QN"), Isbn.of("0134757599"), BookType.CIRCULATING)
+                Book.of(BookId.of("9Vf5QN"), Isbn.of("0134757599"), BookType.CIRCULATING),
+                "gyqCPp",
+                Book.of(BookId.of("gyqCPp"), Isbn.of("173210221X"), BookType.CIRCULATING)
         );
     }
 
@@ -38,12 +39,8 @@ public class SampleBooks {
         return Optional.ofNullable(books().get(bookId)).orElseThrow();
     }
 
-    public static BookId anyBookId() {
-        return BookId.of(Ids.next());
-    }
-
     public static Book anyBook() {
-        return book("ZuWLBP");
+        return books().values().stream().findAny().orElseThrow();
     }
 
 }
