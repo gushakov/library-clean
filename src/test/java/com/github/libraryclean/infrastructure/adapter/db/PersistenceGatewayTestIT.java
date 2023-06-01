@@ -15,6 +15,7 @@ package com.github.libraryclean.infrastructure.adapter.db;
 
 import com.github.libraryclean.core.model.catalog.CatalogEntry;
 import com.github.libraryclean.core.model.catalog.Isbn;
+import com.github.libraryclean.core.model.catalog.SampleCatalog;
 import com.github.libraryclean.core.model.patron.Patron;
 import com.github.libraryclean.core.model.patron.SamplePatrons;
 import com.github.libraryclean.infrastructure.LibraryCleanApplication;
@@ -23,19 +24,18 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
+import javax.transaction.Transactional;
 import java.time.LocalDate;
 
 import static com.github.libraryclean.core.model.catalog.SampleCatalog.catalogEntry;
 
 /*
     This is an integration test which requires a running instance
-    of a database. See also "V2.0__Add_sample_data.sql" Flyway migration
-    script.
+    of a database.
  */
 @SpringBootTest(classes = {LibraryCleanApplication.class}, webEnvironment = SpringBootTest.WebEnvironment.NONE)
-//@Transactional
+@Transactional
 public class PersistenceGatewayTestIT {
 
     @Autowired
@@ -50,55 +50,36 @@ public class PersistenceGatewayTestIT {
         String isbn = "0134494164";
         CatalogEntry sampleEntry = catalogEntry(isbn);
 
-        // which does not exist in the database
-        persistenceGateway.deleteCatalogEntryByIsbn(sampleEntry.getIsbn());
-
         // when
 
         persistenceGateway.saveCatalogEntry(sampleEntry);
+        CatalogEntry loadedCatalogEntry = persistenceGateway.loadCatalogEntry(Isbn.of(isbn));
 
         // then
 
-        CatalogEntry loadedCatalogEntry = persistenceGateway.loadCatalogEntry(Isbn.of(isbn));
         catalogEntriesMatch(sampleEntry, loadedCatalogEntry);
     }
 
     @Test
-    void load_sample_catalog_entry() {
+    void save_sample_patron_with_hold() {
 
         // given
 
-        // a catalog entry matching the one in the database
+        // a catalog entry in the DB
+        String isbn = "0134494164";
+        persistenceGateway.saveCatalogEntry(SampleCatalog.catalogEntry(isbn));
 
-        CatalogEntry sampleEntry = catalogEntry("0134494164");
-
-        // when
-
-        CatalogEntry loadedEntry = persistenceGateway.loadCatalogEntry(sampleEntry.getIsbn());
-
-        // then
-
-        catalogEntriesMatch(loadedEntry, sampleEntry);
-    }
-
-
-    @Test
-    void load_sample_partner_with_hold() {
-
-        // given
-
-        // a patron matching the patron from DB
-
+        // and a sample patron with a hold for the same catalog entry
         Patron samplePatron = SamplePatrons.patronWithHoldStartingAt("hLARqY",
-                "0134494164", LocalDate.of(2023, 5, 30));
+                isbn, LocalDate.of(2023, 5, 30));
 
         // when
 
+        persistenceGateway.savePatron(samplePatron);
         Patron loadedPatron = persistenceGateway.loadPatron(samplePatron.getPatronId());
 
         // then
-
-        patronsMatch(loadedPatron, samplePatron);
+        patronsMatch(samplePatron, loadedPatron);
 
     }
 

@@ -36,6 +36,8 @@ public abstract class MapStructDbMapper implements DbMapper {
     @Mapping(target = "checkOuts", ignore = true)
     protected abstract Patron map(PatronDbEntity patronDbEntity);
 
+    protected abstract PatronDbEntity map(Patron patron);
+
     @IgnoreForMapping
     @Override
     public CatalogEntry convert(CatalogEntryDbEntity dbEntity) {
@@ -52,5 +54,11 @@ public abstract class MapStructDbMapper implements DbMapper {
     @Override
     public Patron convert(PatronDbEntity patronDbEntity) {
         return map(patronDbEntity);
+    }
+
+    @IgnoreForMapping
+    @Override
+    public PatronDbEntity convert(Patron patron) {
+        return map(patron);
     }
 }

@@ -26,4 +26,6 @@ public interface DbMapper {
 
     Patron convert(PatronDbEntity patronDbEntity);
 
+    PatronDbEntity convert(Patron patron);
+
 }

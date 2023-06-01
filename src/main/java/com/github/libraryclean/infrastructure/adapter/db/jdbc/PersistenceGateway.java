@@ -89,7 +89,11 @@ public class PersistenceGateway implements PersistenceGatewayOutputPort {
 
     @Override
     public void savePatron(Patron patron) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        try {
+            patronRepo.save(dbMapper.convert(patron));
+        } catch (Exception e) {
+            throw new PersistenceError("Cannot save patron with ID: %s".formatted(patron.getPatronId()));
+        }
     }
 
     @Override
