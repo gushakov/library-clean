@@ -19,4 +19,8 @@ public class PersistenceError extends GenericLibraryError {
     public PersistenceError(String message) {
         super(message);
     }
+
+    public PersistenceError(String message, Exception e) {
+        super(message, e);
+    }
 }

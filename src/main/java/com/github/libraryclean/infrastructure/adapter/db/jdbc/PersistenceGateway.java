@@ -54,10 +54,15 @@ public class PersistenceGateway implements PersistenceGatewayOutputPort {
 
     @Override
     public CatalogEntry loadCatalogEntry(Isbn isbn) {
-        return catalogRepo.findById(isbn.getNumber())
-                .map(dbMapper::convert)
-                .orElseThrow(() -> new PersistenceError("Cannot load catalog entry with ISBN: %s"
-                        .formatted(isbn.getNumber())));
+        String errorMessage = "Cannot load catalog entry with ISBN: %s"
+                .formatted(isbn.getNumber());
+        try {
+            return catalogRepo.findById(isbn.getNumber())
+                    .map(dbMapper::convert)
+                    .orElseThrow(() -> new PersistenceError(errorMessage));
+        } catch (PersistenceError e) {
+            throw new PersistenceError(errorMessage, e);
+        }
     }
 
     @Override
@@ -67,10 +72,14 @@ public class PersistenceGateway implements PersistenceGatewayOutputPort {
 
     @Override
     public Patron loadPatron(PatronId patronId) {
-        return patronRepo.findById(patronId.getId())
-                .map(dbMapper::convert)
-                .orElseThrow(() -> new PersistenceError("Cannot load patron with ID: %s"
-                        .formatted(patronId.getId())));
+        String errorMessage = "Cannot load patron with ID: %s".formatted(patronId.getId());
+        try {
+            return patronRepo.findById(patronId.getId())
+                    .map(dbMapper::convert)
+                    .orElseThrow(() -> new PersistenceError(errorMessage));
+        } catch (Exception e) {
+            throw new PersistenceError(errorMessage, e);
+        }
     }
 
     @Override
@@ -81,5 +90,26 @@ public class PersistenceGateway implements PersistenceGatewayOutputPort {
     @Override
     public void savePatron(Patron patron) {
         throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    @Override
+    public void saveCatalogEntry(CatalogEntry catalogEntry) {
+        try {
+            catalogRepo.save(dbMapper.convert(catalogEntry));
+        } catch (Exception e) {
+            throw new PersistenceError("Cannot save catalog entry for ISBN: %s"
+                    .formatted(catalogEntry.getIsbn().getNumber()), e);
+        }
+    }
+
+    @Override
+    public void deleteCatalogEntryByIsbn(Isbn isbn) {
+        try {
+            catalogRepo.deleteById(isbn.getNumber());
+        } catch (Exception e) {
+            throw new PersistenceError("Cannot delete catalog entry with ISBN: %s"
+                    .formatted(isbn.getNumber()), e);
+
+        }
     }
 }

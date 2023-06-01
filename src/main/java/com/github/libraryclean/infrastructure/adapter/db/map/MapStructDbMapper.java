@@ -29,6 +29,8 @@ public abstract class MapStructDbMapper implements DbMapper {
 
     protected abstract CatalogEntry map(CatalogEntryDbEntity dbEntity);
 
+    protected abstract CatalogEntryDbEntity map(CatalogEntry catalogEntry);
+
     protected abstract Hold map(HoldDbEntity dbEntity);
 
     @Mapping(target = "checkOuts", ignore = true)
@@ -42,8 +44,8 @@ public abstract class MapStructDbMapper implements DbMapper {
 
     @IgnoreForMapping
     @Override
-    public Hold convert(HoldDbEntity dbEntity) {
-        return map(dbEntity);
+    public CatalogEntryDbEntity convert(CatalogEntry catalogEntry) {
+        return map(catalogEntry);
     }
 
     @IgnoreForMapping

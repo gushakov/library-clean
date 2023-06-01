@@ -73,4 +73,18 @@ public interface PersistenceGatewayOutputPort {
      * @param patron patron to save
      */
     void savePatron(Patron patron);
+
+    /**
+     * Saves catalog entry in the persistence store.
+     *
+     * @param catalogEntry catalog entry to save
+     */
+    void saveCatalogEntry(CatalogEntry catalogEntry);
+
+    /**
+     * Deletes catalog entry with the given {@code ISBN} from the
+     * persistence store.
+     * @param isbn ISBN of the catalog entry to delete
+     */
+    void deleteCatalogEntryByIsbn(Isbn isbn);
 }

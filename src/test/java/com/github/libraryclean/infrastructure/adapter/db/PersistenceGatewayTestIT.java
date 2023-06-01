@@ -14,6 +14,7 @@
 package com.github.libraryclean.infrastructure.adapter.db;
 
 import com.github.libraryclean.core.model.catalog.CatalogEntry;
+import com.github.libraryclean.core.model.catalog.Isbn;
 import com.github.libraryclean.core.model.patron.Patron;
 import com.github.libraryclean.core.model.patron.SamplePatrons;
 import com.github.libraryclean.infrastructure.LibraryCleanApplication;
@@ -22,6 +23,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
@@ -33,10 +35,33 @@ import static com.github.libraryclean.core.model.catalog.SampleCatalog.catalogEn
     script.
  */
 @SpringBootTest(classes = {LibraryCleanApplication.class}, webEnvironment = SpringBootTest.WebEnvironment.NONE)
+//@Transactional
 public class PersistenceGatewayTestIT {
 
     @Autowired
     private PersistenceGateway persistenceGateway;
+
+    @Test
+    void save_sample_catalog_entry() {
+
+        // given
+
+        // a sample catalog entry
+        String isbn = "0134494164";
+        CatalogEntry sampleEntry = catalogEntry(isbn);
+
+        // which does not exist in the database
+        persistenceGateway.deleteCatalogEntryByIsbn(sampleEntry.getIsbn());
+
+        // when
+
+        persistenceGateway.saveCatalogEntry(sampleEntry);
+
+        // then
+
+        CatalogEntry loadedCatalogEntry = persistenceGateway.loadCatalogEntry(Isbn.of(isbn));
+        catalogEntriesMatch(sampleEntry, loadedCatalogEntry);
+    }
 
     @Test
     void load_sample_catalog_entry() {
