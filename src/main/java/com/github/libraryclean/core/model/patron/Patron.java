@@ -90,6 +90,21 @@ public class Patron {
         this.holds = copy(holds);
         this.checkOuts = copy(checkOuts);
         this.version = version;
+        validate();
+    }
+
+    private void validate() {
+
+        // do nothing if there are no holds or checkouts
+        if (holds == null
+                || holds.isEmpty()
+                || checkOuts == null
+                || checkOuts.isEmpty()) {
+            return;
+        }
+
+        // check that book holding policy holds for every hold
+        holds.forEach(hold -> BOOK_HOLDING_POLICY.verifyPatronAllowedToHold(this, hold));
     }
 
     /**
