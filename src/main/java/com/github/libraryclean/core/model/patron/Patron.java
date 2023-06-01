@@ -40,10 +40,6 @@ import static com.github.libraryclean.core.Validator.*;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Patron {
 
-    // associate default book holding policy with every patron
-    private final static BookHoldingPolicy BOOK_HOLDING_POLICY = new BookHoldingPolicy() {
-    };
-
     /**
      * ID of the patron.
      */
@@ -70,6 +66,11 @@ public class Patron {
      */
     Set<CheckOut> checkOuts;
 
+    /**
+     * Policy for putting a book on hold.
+     */
+    BookHoldingPolicy bookHoldingPolicy;
+
     Integer version;
 
     public static Patron of(PatronId patronId, String fullName, PatronLevel level) {
@@ -90,6 +91,7 @@ public class Patron {
         this.holds = copy(holds);
         this.checkOuts = copy(checkOuts);
         this.version = version;
+        this.bookHoldingPolicy = new DefaultBookHoldingPolicy();
         validate();
     }
 
@@ -104,7 +106,7 @@ public class Patron {
         }
 
         // check that book holding policy holds for every hold
-        holds.forEach(hold -> BOOK_HOLDING_POLICY.verifyPatronAllowedToHold(this, hold));
+        holds.forEach(hold -> bookHoldingPolicy.verifyPatronAllowedToHold(this, hold));
     }
 
     /**
@@ -149,7 +151,7 @@ public class Patron {
 
         // check with the book holding policy if patron is allowed to hold
         // the book
-        BOOK_HOLDING_POLICY.verifyPatronAllowedToHold(this, hold);
+        bookHoldingPolicy.verifyPatronAllowedToHold(this, hold);
 
         /*
             Now we can proceed with registering a new active hold for this patron. Since

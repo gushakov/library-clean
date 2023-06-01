@@ -1,27 +1,25 @@
 package com.github.libraryclean.core.model.patron;
 
+/*
+    Point of interest
+    -----------------
+
+    Modeling number of overdue checkouts as a policy.
+    It is a deeply embedded domain constraint which would
+    not be easy to change without processing all existing
+    "Patron" aggregates and verifying that they are still
+    valid (no more than 2 overdue checkouts before a hold
+    can be placed).
+ */
+
 public interface BookHoldingPolicy {
 
-    /*
-        Point of interest
-        -----------------
-
-        Modeling number of overdue checkouts as a policy.
-        It is a deeply embedded domain constraint which would
-        not be easy to change without processing all existing
-        "Patron" aggregates and verifying that they are still
-        valid (no more than 2 overdue checkouts before a hold
-        can be placed).
+    /**
+     * Verifies if {@code patron} is allowed to put a {@code hold} on a book.
+     *
+     * @param patron patron trying to put a hold on a book
+     * @param hold   hold describing a reservation for a book (catalog entry)
      */
-
-    int MAX_NUMBER_OF_OVERDUE_CHECKOUTS = 2;
-
-    default void verifyPatronAllowedToHold(Patron patron, Hold hold) {
-        // cannot exceed the maximum number of overdue checkouts for a successful hold
-        if (patron.overdueCheckOuts(hold.getStartDate()).size() > MAX_NUMBER_OF_OVERDUE_CHECKOUTS) {
-            throw new TooManyOverdueCheckoutsError(hold, "Cannot issue any holds after the maximum number of " +
-                    "overdue checkouts has been reached");
-        }
-    }
+    void verifyPatronAllowedToHold(Patron patron, Hold hold);
 
 }
