@@ -40,22 +40,9 @@ import static com.github.libraryclean.core.Validator.*;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Patron {
 
-    /*
-        Point of interest
-        -----------------
-
-        Modeling number of overdue checkouts as a constant.
-        It is a deeply embedded domain constraint which would
-        not be easy to change without processing all existing
-        "Patron" aggregates and verifying that they are still
-        valid (no more than 2 overdue checkouts before a hold
-        can be placed).
-        Note that the first version of this implementation
-        took this number as a parameter to "holdBook()"
-        method. It was supplied by the "HoldBook" use case.
-     */
-
-    public static final int MAX_NUMBER_OF_OVERDUE_CHECKOUTS = 2;
+    // associate default book holding policy with every patron
+    private final static BookHoldingPolicy BOOK_HOLDING_POLICY = new BookHoldingPolicy() {
+    };
 
     /**
      * ID of the patron.
@@ -103,6 +90,21 @@ public class Patron {
         this.holds = copy(holds);
         this.checkOuts = copy(checkOuts);
         this.version = version;
+        validate();
+    }
+
+    private void validate() {
+
+        // do nothing if there are no holds or checkouts
+        if (holds == null
+                || holds.isEmpty()
+                || checkOuts == null
+                || checkOuts.isEmpty()) {
+            return;
+        }
+
+        // check that book holding policy holds for every hold
+        holds.forEach(hold -> BOOK_HOLDING_POLICY.verifyPatronAllowedToHold(this, hold));
     }
 
     /**
@@ -145,11 +147,9 @@ public class Patron {
             throw new InsufficientPatronLevelForHoldTypeError(hold, "Regular patron cannot issue an open-ended holds");
         }
 
-        // cannot exceed the maximum number of overdue checkouts for a successful hold
-        if (overdueCheckOuts(holdStartDate).size() > MAX_NUMBER_OF_OVERDUE_CHECKOUTS) {
-            throw new TooManyOverdueCheckoutsError(hold, "Cannot issue any holds after the maximum number of " +
-                    "overdue checkouts has been reached");
-        }
+        // check with the book holding policy if patron is allowed to hold
+        // the book
+        BOOK_HOLDING_POLICY.verifyPatronAllowedToHold(this, hold);
 
         /*
             Now we can proceed with registering a new active hold for this patron. Since
