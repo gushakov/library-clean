@@ -127,9 +127,8 @@ public class HoldBookUseCase implements HoldBookInputPort {
 
                     We have also gathered all the information external to "Patron"
                     aggregate (from application configuration) and which
-                    it will require to process its book holding logic. These are:
-                        - the number of days for closed-ended holds
-                        - maximum number of overdue checkouts before hold can be processed
+                    it will require to process its book holding logic. This includes
+                    the number of days for closed-ended holds, for example.
 
                     After this point, it's up to the instance of "Patron" aggregate to
                     perform actual logic related to the book hold. We load the instance
