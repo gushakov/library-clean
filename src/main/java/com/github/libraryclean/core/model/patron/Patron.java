@@ -92,21 +92,48 @@ public class Patron {
         this.checkOuts = copy(checkOuts);
         this.version = version;
         this.bookHoldingPolicy = new DefaultBookHoldingPolicy();
-        validate();
+        checkInvariants();
     }
 
-    private void validate() {
+    private void checkInvariants() {
+
+        /*
+            Point of interest
+            -----------------
+
+            Here we implement verification for any aggregate invariants
+            which were not already checked in the constructor. For "Patron"
+            aggregate we need to check that all holds conform to the
+            current "BookHoldingPolicy" registered with this instance.
+         */
 
         // do nothing if there are no holds or checkouts
-        if (holds == null
-                || holds.isEmpty()
-                || checkOuts == null
-                || checkOuts.isEmpty()) {
+        if (noHolds() || noCheckOuts()) {
             return;
         }
 
         // check that book holding policy holds for every hold
         holds.forEach(hold -> bookHoldingPolicy.verifyPatronAllowedToHold(this, hold));
+    }
+
+    /**
+     * Returns {@code true} if this patron does not currently have any (open or active)
+     * holds.
+     *
+     * @return {@code true} if patron does not have any holds or {@code false} otherwise
+     */
+    public boolean noHolds() {
+        return holds == null || holds.isEmpty();
+    }
+
+    /**
+     * Returns {@code true} if this patron does not currently have any (open or active)
+     * checkouts.
+     *
+     * @return {@code true} if patron does not have any checkouts or {@code false} otherwise
+     */
+    public boolean noCheckOuts() {
+        return checkOuts == null || checkOuts.isEmpty();
     }
 
     /**
