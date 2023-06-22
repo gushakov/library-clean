@@ -28,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -56,13 +57,14 @@ public class PersistenceGateway implements PersistenceGatewayOutputPort {
     public CatalogEntry loadCatalogEntry(Isbn isbn) {
         String errorMessage = "Cannot load catalog entry with ISBN: %s"
                 .formatted(isbn.getNumber());
+        Optional<CatalogEntry> catalogEntryOpt;
         try {
-            return catalogRepo.findById(isbn.getNumber())
-                    .map(dbMapper::convert)
-                    .orElseThrow(() -> new PersistenceError(errorMessage));
-        } catch (PersistenceError e) {
+            catalogEntryOpt = catalogRepo.findById(isbn.getNumber())
+                    .map(dbMapper::convert);
+        } catch (Exception e) {
             throw new PersistenceError(errorMessage, e);
         }
+        return catalogEntryOpt.orElseThrow(() -> new PersistenceError(errorMessage));
     }
 
     @Override
