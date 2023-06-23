@@ -75,13 +75,14 @@ public class PersistenceGateway implements PersistenceGatewayOutputPort {
     @Override
     public Patron loadPatron(PatronId patronId) {
         String errorMessage = "Cannot load patron with ID: %s".formatted(patronId.getId());
+        Optional<Patron> patronOpt;
         try {
-            return patronRepo.findById(patronId.getId())
-                    .map(dbMapper::convert)
-                    .orElseThrow(() -> new PersistenceError(errorMessage));
+            patronOpt = patronRepo.findById(patronId.getId())
+                    .map(dbMapper::convert);
         } catch (Exception e) {
             throw new PersistenceError(errorMessage, e);
         }
+        return patronOpt.orElseThrow(() -> new PersistenceError(errorMessage));
     }
 
     @Override
