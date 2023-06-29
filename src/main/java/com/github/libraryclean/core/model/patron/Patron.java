@@ -195,7 +195,8 @@ public class Patron {
      * @return optional with matching checkout
      */
     public Optional<CheckOut> findCheckOut(Isbn isbn) {
-        return checkOuts.stream().filter(checkOut -> checkOut.getIsbn().equals(isbn)).findAny();
+        return Optional.ofNullable(checkOuts).orElse(Set.of()) // bugfix, 29.06.2023, job-challenge-2023(a)
+                .stream().filter(checkOut -> checkOut.getIsbn().equals(isbn)).findAny();
     }
 
     /**
@@ -204,7 +205,8 @@ public class Patron {
      * @return set of any overdue checkouts or an empty set if there are none
      */
     public Set<CheckOut> overdueCheckOuts(LocalDate atDate) {
-        return checkOuts.stream()
+        return Optional.ofNullable(checkOuts).orElse(Set.of()) // bugfix, 29.06.2023, job-challenge-2023(a)
+                .stream()
                 .filter(checkOut -> checkOut.isOverdue(atDate))
                 .collect(Collectors.toUnmodifiableSet());
     }
@@ -227,7 +229,8 @@ public class Patron {
                 .fullName(fullName)
                 .level(level)
                 .holds(holds)
-                .checkOuts(checkOuts);
+                .checkOuts(checkOuts)
+                .version(version);  // bugfix, 29.06.2023, job-challenge-2023(a)
     }
 
     // these methods are package-private so that we can use it from tests
