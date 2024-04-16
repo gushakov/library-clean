@@ -26,10 +26,14 @@ import com.github.libraryclean.infrastructure.adapter.db.jdbc.patron.PatronDbEnt
 import com.github.libraryclean.infrastructure.adapter.db.map.DbMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.NoTransactionException;
+import org.springframework.transaction.interceptor.TransactionInterceptor;
 
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * Secondary adapter for working with the persistence store.
@@ -50,7 +54,7 @@ public class PersistenceGateway implements PersistenceGatewayOutputPort {
 
     @Override
     public boolean existsInCatalog(Isbn isbn) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        return catalogRepo.existsById(isbn.getNumber());
     }
 
     @Override
@@ -68,8 +72,22 @@ public class PersistenceGateway implements PersistenceGatewayOutputPort {
     }
 
     @Override
+    public Set<CatalogEntry> loadAllCatalogEntries() {
+        try {
+            return StreamSupport.stream(catalogRepo.findAll().spliterator(), false)
+                    .map(dbMapper::convert)
+                    .collect(Collectors.toUnmodifiableSet());
+        } catch (Exception e) {
+            throw new PersistenceError("Cannot load all catalog entries. %s"
+                    .formatted(e.getMessage()), e);
+        }
+    }
+
+    @Override
     public Set<Book> findAvailableBooks(Isbn isbn, BookType type, LocalDate date) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        // Assume no books are available (for checkout). In reality, we would have
+        // to issue a custom query here.
+        return Set.of();
     }
 
     @Override
@@ -87,7 +105,13 @@ public class PersistenceGateway implements PersistenceGatewayOutputPort {
 
     @Override
     public void rollback() {
-        throw new UnsupportedOperationException("Not implemented yet");
+        // roll back any transaction, if needed
+        // code from: https://stackoverflow.com/a/23502214
+        try {
+            TransactionInterceptor.currentTransactionStatus().setRollbackOnly();
+        } catch (NoTransactionException e) {
+            // do nothing if not running in a transactional context
+        }
     }
 
     @Override

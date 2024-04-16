@@ -21,7 +21,7 @@ public class SampleCatalog {
     private static Map<String, CatalogEntry> catalogEntries() {
         return Map.of(
                 "0134494164",
-                CatalogEntry.of(Isbn.of("0134494164"), "Clean Architecture", "Robert Martin"),
+                CatalogEntry.of(Isbn.of("0134494164"), "Clean Architecture", "Robert C. Martin"),
 
                 "0321125215",
                 CatalogEntry.of(Isbn.of("0321125215"), "Domain-Driven Design", "Eric Evans"),

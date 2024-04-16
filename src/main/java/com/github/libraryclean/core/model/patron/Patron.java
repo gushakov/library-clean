@@ -195,8 +195,13 @@ public class Patron {
      * @return optional with matching checkout
      */
     public Optional<CheckOut> findCheckOut(Isbn isbn) {
+
+        // gushakov, 28.06.2023
+        // since we have not implemented any functionality for checkouts we need to check for null here
+
         return Optional.ofNullable(checkOuts).orElse(Set.of()) // bugfix, 29.06.2023, job-challenge-2023(a)
-                .stream().filter(checkOut -> checkOut.getIsbn().equals(isbn)).findAny();
+                .stream()
+                .filter(checkOut -> checkOut.getIsbn().equals(isbn)).findAny();
     }
 
     /**
@@ -205,7 +210,11 @@ public class Patron {
      * @return set of any overdue checkouts or an empty set if there are none
      */
     public Set<CheckOut> overdueCheckOuts(LocalDate atDate) {
-        return Optional.ofNullable(checkOuts).orElse(Set.of()) // bugfix, 29.06.2023, job-challenge-2023(a)
+
+        // gushakov, 28.06.2023
+        // since we have not implemented any functionality for checkouts we need to check for null here
+
+        return Optional.ofNullable(checkOuts).orElse(Set.of())  // bugfix, 29.06.2023, job-challenge-2023(a)
                 .stream()
                 .filter(checkOut -> checkOut.isOverdue(atDate))
                 .collect(Collectors.toUnmodifiableSet());
@@ -224,6 +233,10 @@ public class Patron {
     }
 
     private PatronBuilder newPatron() {
+
+        // gushakov, 28.06.2023
+        // little correction, forgot to copy "version" to the new instance
+
         return Patron.builder()
                 .patronId(patronId)
                 .fullName(fullName)

@@ -1,0 +1,52 @@
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<!--
+Add a simple Thymeleaf page with a list of sample catalog entries.
+-->
+
+<style>
+    table {
+        width: 500px;
+        border: lightgray solid 1px;
+    }
+
+    td {
+        vertical-align: top;
+    }
+</style>
+
+<body>
+
+<h3>Catalog Entries</h3>
+<div>
+
+    <table>
+        <thead>
+        <tr>
+            <th>ISBN</th>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!--/*@thymesVar id="entries" type="java.util.Set<com.github.libraryclean.core.model.catalog.CatalogEntry>"*/-->
+        <tr th:each="entry: ${entries}">
+            <td th:text="${entry.isbn.number}">ISBN</td>
+            <td th:text="${entry.title}">title</td>
+            <td th:text="${entry.author}">author</td>
+            <td>
+                <form method="post" action="#" th:action="@{/holdBook}">
+                    <input type="hidden" name="isbn" th:value="${entry.isbn}">
+                    <button type="submit">Hold</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+</div>
+
+
+</body>
+</html>

@@ -18,10 +18,13 @@ import com.github.libraryclean.core.model.patron.CheckOut;
 import com.github.libraryclean.core.model.patron.Hold;
 import com.github.libraryclean.core.model.patron.Patron;
 import com.github.libraryclean.core.model.patron.PatronId;
+import com.github.libraryclean.core.ports.ErrorHandlingOutputPort;
 
-public interface HoldBookPresenterOutputPort {
-    void presentError(Throwable error);
-
+/**
+ * Presenter port for "hold book" use case. Declares all presentation methods for successful
+ * or erroneous outcomes.
+ */
+public interface HoldBookPresenterOutputPort extends ErrorHandlingOutputPort {
     void presentErrorValidatingInput(String patronId, String isbn);
 
     void presentErrorOnAbsentCatalogEntry(Isbn isbn);

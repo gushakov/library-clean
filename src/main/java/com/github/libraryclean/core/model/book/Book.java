@@ -28,7 +28,7 @@ import static com.github.libraryclean.core.Validator.notNull;
  * has a reference to a catalog entry via an ISBN. Each {@code Book} has {@code type}
  * attribute which can be "Circulating" or "Restricted".
  * <p>
- * This entity corresponds to "an instance of a book" in the original domain description.
+ * Note: for in the original domain description this corresponds to "an instance of a book".
  *
  * @see BookId
  * @see BookType

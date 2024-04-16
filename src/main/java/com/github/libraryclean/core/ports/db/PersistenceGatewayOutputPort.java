@@ -43,6 +43,13 @@ public interface PersistenceGatewayOutputPort {
     CatalogEntry loadCatalogEntry(Isbn isbn);
 
     /**
+     * Returns the list of all catalog entries.
+     *
+     * @return all catalog entries
+     */
+    Set<CatalogEntry> loadAllCatalogEntries();
+
+    /**
      * Returns a set of available books with the corresponding ISBN on a particular
      * date. Available books are books which are not currently held or checkout.
      *
@@ -84,6 +91,7 @@ public interface PersistenceGatewayOutputPort {
     /**
      * Deletes catalog entry with the given {@code ISBN} from the
      * persistence store.
+     *
      * @param isbn ISBN of the catalog entry to delete
      */
     void deleteCatalogEntryByIsbn(Isbn isbn);

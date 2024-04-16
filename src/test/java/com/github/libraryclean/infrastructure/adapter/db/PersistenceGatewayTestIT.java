@@ -24,18 +24,19 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
-import javax.transaction.Transactional;
 import java.time.LocalDate;
 
 import static com.github.libraryclean.core.model.catalog.SampleCatalog.catalogEntry;
 
 /*
     This is an integration test which requires a running instance
-    of a database.
+    of a database. Database is assumed to be empty at the beginning
+    of the test. Use manually from the IDE.
  */
 @SpringBootTest(classes = {LibraryCleanApplication.class}, webEnvironment = SpringBootTest.WebEnvironment.NONE)
-@Transactional
+@ActiveProfiles({"test"})
 public class PersistenceGatewayTestIT {
 
     @Autowired

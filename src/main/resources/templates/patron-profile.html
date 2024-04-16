@@ -1,0 +1,54 @@
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<!--
+Add a simple Thymeleaf page with a list of current holds for a Patron.
+-->
+
+<style>
+    table {
+        width: 500px;
+        border: lightgray solid 1px;
+    }
+
+    td {
+        vertical-align: top;
+    }
+</style>
+
+
+<body>
+
+<h3>Current holds (
+    <th:block th:text="${patronId}"/>
+    )
+</h3>
+
+<div>
+
+    <table>
+        <thead>
+        <tr>
+            <th>ISBN</th>
+            <th>Title</th>
+            <th>Author</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!--/*@thymesVar id="holdsEntries" type="java.util.Set<com.github.libraryclean.core.model.catalog.CatalogEntry>"*/-->
+        <tr th:each="holdEntry: ${holdsEntries}">
+            <td th:text="${holdEntry.isbn}">ISBN</td>
+            <td th:text="${holdEntry.title}">title</td>
+            <td th:text="${holdEntry.author}">ISBN</td>
+        </tr>
+        </tbody>
+    </table>
+
+</div>
+
+<div>
+    <a th:href="@{/}">Home</a>
+</div>
+
+
+</body>
+</html>
