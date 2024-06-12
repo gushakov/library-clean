@@ -120,6 +120,33 @@ public class HoldBookUseCaseTest {
 
         patronWasSaved(patron.getPatronId());
 
+        // and
+
+        successfulPutOnHoldWasPresented(patron.getPatronId(), isbn, holdStartDate, holdDuration);
+
+        // and
+
+        noOtherErrorsOccurred();
+
+    }
+
+    private void noOtherErrorsOccurred() {
+        verify(presenter, times(0)).presentError(any(Throwable.class));
+    }
+
+    private void successfulPutOnHoldWasPresented(PatronId patronId, Isbn isbn, LocalDate holdStartDate, Days holdDuration) {
+
+        ArgumentCaptor<Patron> patronArg = ArgumentCaptor.forClass(Patron.class);
+        verify(presenter, times(1)).presentSuccessfulPutOnHoldOfBookForPatron(patronArg.capture());
+        Patron patronWithNewHold = patronArg.getValue();
+        assertThat(patronWithNewHold.getPatronId()).isEqualTo(patronId);
+        assertThat(patronWithNewHold.getHolds())
+                .contains(Hold.builder()
+                        .isbn(isbn)
+                        .startDate(holdStartDate)
+                        .duration(holdDuration)
+                        .build());
+
     }
 
     private void patronWasSaved(PatronId patronId) {
