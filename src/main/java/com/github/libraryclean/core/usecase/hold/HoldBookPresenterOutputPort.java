@@ -44,4 +44,6 @@ public interface HoldBookPresenterOutputPort extends ErrorHandlingOutputPort {
     void presentErrorSavingPatronWithAdditionalHold(Patron patronWithAdditionalHold);
 
     void presentSuccessfulPutOnHoldOfBookForPatron(Patron patronWithAdditionalHold);
+
+    void presentErrorIfUserIsNotAuthenticated();
 }

@@ -2,6 +2,7 @@ package com.github.libraryclean.infrastructure.config;
 
 import com.github.libraryclean.core.ports.config.ConfigurationOutputPort;
 import com.github.libraryclean.core.ports.db.PersistenceGatewayOutputPort;
+import com.github.libraryclean.core.ports.security.SecurityOperationsOutputPort;
 import com.github.libraryclean.core.usecase.browse.BrowseCatalogInputPort;
 import com.github.libraryclean.core.usecase.browse.BrowseCatalogPresenterOutputPort;
 import com.github.libraryclean.core.usecase.browse.BrowseCatalogUseCase;
@@ -28,9 +29,10 @@ public class UseCaseConfig {
     @Bean
     @Scope(BeanDefinition.SCOPE_PROTOTYPE)
     public HoldBookInputPort holdBookUseCase(HoldBookPresenterOutputPort presenter,
+                                             SecurityOperationsOutputPort securityOps,
                                              PersistenceGatewayOutputPort gatewayOps) {
 
-        return new HoldBookUseCase(presenter, gatewayOps, new ConfigurationOutputPort() {
+        return new HoldBookUseCase(presenter, securityOps, gatewayOps, new ConfigurationOutputPort() {
         });
 
     }

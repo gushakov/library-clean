@@ -89,4 +89,10 @@ public class HoldBookPresenter extends AbstractWebPresenter implements HoldBookP
         // redirect to patron's holds view, usual POST + redirect + GET technique
         redirect("/patronHolds", Map.of("patronId", patronWithAdditionalHold.getPatronId().getId()));
     }
+
+    @Override
+    public void presentErrorIfUserIsNotAuthenticated() {
+        // TODO: not yet implemented
+        throw new UnsupportedOperationException("Present error...");
+    }
 }

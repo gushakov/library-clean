@@ -16,12 +16,10 @@ package com.github.libraryclean.core.usecase.hold;
 import com.github.libraryclean.core.model.book.Book;
 import com.github.libraryclean.core.model.book.BookType;
 import com.github.libraryclean.core.model.catalog.Isbn;
-import com.github.libraryclean.core.model.patron.Days;
-import com.github.libraryclean.core.model.patron.Hold;
-import com.github.libraryclean.core.model.patron.Patron;
-import com.github.libraryclean.core.model.patron.PatronId;
+import com.github.libraryclean.core.model.patron.*;
 import com.github.libraryclean.core.ports.config.ConfigurationOutputPort;
 import com.github.libraryclean.core.ports.db.PersistenceGatewayOutputPort;
+import com.github.libraryclean.core.ports.security.SecurityOperationsOutputPort;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -34,7 +32,6 @@ import java.util.Set;
 import static com.github.libraryclean.core.model.SampleDates.anyDate;
 import static com.github.libraryclean.core.model.book.SampleBooks.anyBook;
 import static com.github.libraryclean.core.model.catalog.SampleCatalog.anyIsbn;
-import static com.github.libraryclean.core.model.patron.SamplePatrons.anyPatronId;
 import static com.github.libraryclean.core.model.patron.SamplePatrons.anyRegularPatron;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.groups.Tuple.tuple;
@@ -45,6 +42,9 @@ public class HoldBookUseCaseTest {
 
     @Mock
     private HoldBookPresenterOutputPort presenter;
+
+    @Mock
+    private SecurityOperationsOutputPort securityOps;
 
     @Mock
     private PersistenceGatewayOutputPort gatewayOps;
@@ -58,12 +58,18 @@ public class HoldBookUseCaseTest {
         // given
 
         HoldBookUseCase useCase = useCase();
-        PatronId patronId = anyPatronId();
+        /*
+            UPDATE, 13.12.2024
+            Bootstrap mock security port to return ID of any
+            sample patron as the username of the currently
+            authenticated user.
+        */
+        authenticatedUserWithUsernameOfExistingPatron();
         Isbn isbnNotInCatalog = anIsbnNotInCatalog();
 
         // when
 
-        useCase.holdBook(patronId.getId(), isbnNotInCatalog.getNumber(), anyDate(), false);
+        useCase.holdBook(isbnNotInCatalog.getNumber(), anyDate(), false);
 
         // then
 
@@ -79,13 +85,13 @@ public class HoldBookUseCaseTest {
 
         // given
         HoldBookUseCase useCase = useCase();
-        Patron patron = existingRegularPatron();
+        authenticatedUserWithUsernameOfExistingRegularPatron();
         LocalDate holdStartDate = anyDate();
         Isbn isbn = isbnInCatalogWithAvailableCirculatingBookInstances(holdStartDate);
 
         // when
 
-        useCase.holdBook(patron.getPatronId().getId(), isbn.getNumber(), holdStartDate, false);
+        useCase.holdBook(isbn.getNumber(), holdStartDate, false);
 
         // then
 
@@ -103,14 +109,14 @@ public class HoldBookUseCaseTest {
         // given
 
         HoldBookUseCase useCase = useCase();
-        Patron patron = existingRegularPatron();
+        Patron patron = authenticatedUserWithUsernameOfExistingRegularPatron();
         LocalDate holdStartDate = anyDate();
         Isbn isbn = isbnInCatalogWithoutAnyAvailableCirculatingBookInstances(holdStartDate);
         Days holdDuration = durationForClosedEndedHoldSetToDays(30);
 
         // when
 
-        useCase.holdBook(patron.getPatronId().getId(), isbn.getNumber(), holdStartDate, false);
+        useCase.holdBook(isbn.getNumber(), holdStartDate, false);
 
         // then
 
@@ -198,13 +204,6 @@ public class HoldBookUseCaseTest {
         return isbn;
     }
 
-    private Patron existingRegularPatron() {
-        Patron patron = anyRegularPatron();
-        when(gatewayOps.loadPatron(patron.getPatronId()))
-                .thenReturn(patron);
-        return patron;
-    }
-
     private void useCaseDidNotSucceed() {
         verify(presenter, times(0))
                 .presentSuccessfulPutOnHoldOfBookForPatron(any());
@@ -218,12 +217,26 @@ public class HoldBookUseCaseTest {
     }
 
     private HoldBookUseCase useCase() {
-        return new HoldBookUseCase(presenter, gatewayOps, configOps);
+        return new HoldBookUseCase(presenter, securityOps, gatewayOps, configOps);
     }
 
     private Isbn anIsbnNotInCatalog() {
         Isbn isbn = anyIsbn();
         when(gatewayOps.existsInCatalog(isbn)).thenReturn(false);
         return isbn;
+    }
+
+    private void authenticatedUserWithUsernameOfExistingPatron() {
+        when(securityOps.usernameOfLoggedInUser())
+                .thenReturn(SamplePatrons.anyPatronId());
+    }
+
+    private Patron authenticatedUserWithUsernameOfExistingRegularPatron() {
+        Patron patron = anyRegularPatron();
+        when(gatewayOps.loadPatron(patron.getPatronId()))
+                .thenReturn(patron);
+        when(securityOps.usernameOfLoggedInUser())
+                .thenReturn(patron.getPatronId());
+        return patron;
     }
 }

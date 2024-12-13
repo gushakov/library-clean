@@ -21,6 +21,8 @@ import com.github.libraryclean.core.model.patron.*;
 import com.github.libraryclean.core.ports.config.ConfigurationOutputPort;
 import com.github.libraryclean.core.ports.db.PersistenceError;
 import com.github.libraryclean.core.ports.db.PersistenceGatewayOutputPort;
+import com.github.libraryclean.core.ports.security.SecurityOperationsOutputPort;
+import com.github.libraryclean.core.ports.security.UserNotAuthenticatedError;
 import lombok.RequiredArgsConstructor;
 
 import javax.transaction.Transactional;
@@ -38,6 +40,7 @@ public class HoldBookUseCase implements HoldBookInputPort {
     private static final Days DURATION_NOT_APPLICABLE = null;
 
     private final HoldBookPresenterOutputPort presenter;
+    private final SecurityOperationsOutputPort securityOps;
     private final PersistenceGatewayOutputPort gatewayOps;
     private final ConfigurationOutputPort configOps;
 
@@ -48,7 +51,7 @@ public class HoldBookUseCase implements HoldBookInputPort {
      */
     @Override
     @Transactional
-    public void holdBook(String patronIdArg, String isbnArg, LocalDate holdStartDate, boolean openEndedHold) {
+    public void holdBook(String isbnArg, LocalDate holdStartDate, boolean openEndedHold) {
 
         PatronId patronId;
         Isbn isbn;
@@ -58,12 +61,29 @@ public class HoldBookUseCase implements HoldBookInputPort {
         boolean success = false;
         try {
 
-            // construct and validate IDs for the input arguments
+            /*
+                UPDATE, 13.12.2024
+                Obtain username of the currently authenticated user via
+                an output port.
+            */
+
+            // patron ID corresponds to the username of the authenticated user
             try {
-                patronId = PatronId.of(patronIdArg);
+                patronId = securityOps.usernameOfLoggedInUser();
+            } catch (UserNotAuthenticatedError e) {
+                presenter.presentErrorIfUserIsNotAuthenticated();
+                return;
+            }
+
+            /*
+                Construct and validate "Isbn" value object. Create
+                "PatronId" corresponding to the username of the currently
+                authenticated user.
+             */
+            try {
                 isbn = Isbn.of(isbnArg);
             } catch (InvalidDomainObjectError e) {
-                presenter.presentErrorValidatingInput(patronIdArg, isbnArg);
+                presenter.presentErrorValidatingInput(patronId.getId(), isbnArg);
                 return;
             }
 
